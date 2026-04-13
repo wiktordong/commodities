@@ -6,8 +6,9 @@ publishes to GitHub Pages — bookmark the site URL and refresh each morning.
 
 ## Schedule
 
-`05:30 UTC` Mon–Fri = **07:30 CEST** (summer) / 06:30 CET (winter). Edit the
-cron in `.github/workflows/daily-brief.yml` to shift.
+`06:30 UTC` Mon–Fri = **07:30 CET** (winter) / 08:30 CEST (summer). GitHub
+Actions cron is UTC-only and does not follow DST. Edit the cron in
+`.github/workflows/daily-brief.yml` to shift.
 
 ## Setup
 
