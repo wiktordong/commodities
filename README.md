@@ -6,9 +6,10 @@ publishes to GitHub Pages — bookmark the site URL and refresh each morning.
 
 ## Schedule
 
-`06:30 UTC` Mon–Fri = **07:30 CET** (winter) / 08:30 CEST (summer). GitHub
-Actions cron is UTC-only and does not follow DST. Edit the cron in
-`.github/workflows/daily-brief.yml` to shift.
+Brief is **ready before 07:30 Europe/Amsterdam, year-round** (Mon–Fri). The
+workflow uses two month-gated cron entries (06:00 UTC Nov–Mar, 05:00 UTC
+Apr–Oct) with a ~30 min buffer to absorb GitHub Actions cron jitter plus
+build/deploy time, since the cron scheduler is UTC-only.
 
 ## Setup
 
