@@ -3,7 +3,6 @@ name: Daily Asia Commodities Brief
 on:
   schedule:
     # 05:30 UTC = 07:30 CEST (summer) / 06:30 CET (winter).
-    # Adjust to "30 6 * * 1-5" if you prefer 07:30 CET in winter.
     - cron: "30 5 * * 1-5"
   workflow_dispatch:
 
@@ -17,7 +16,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-and-send:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,15 +29,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Generate brief and send email
-        env:
-          EMAIL_SMTP_HOST: ${{ secrets.EMAIL_SMTP_HOST }}
-          EMAIL_SMTP_PORT: ${{ secrets.EMAIL_SMTP_PORT }}
-          EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+      - name: Generate brief
         working-directory: scripts
-        run: python send_email.py
+        run: python generate_brief.py
 
       - name: Commit brief to repo
         run: |
@@ -58,7 +51,7 @@ jobs:
           path: public
 
   deploy-pages:
-    needs: build-and-send
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
