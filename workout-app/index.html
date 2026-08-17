@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ALIGN — Weekly Training</title>
+<style>
+  :root {
+    --lime: #E5E12C;
+    --lime-dim: #b9b524;
+    --slate: #40494E;
+    --slate-light: #4d575d;
+    --mist: #D9D9D6;
+    --black: #000000;
+    --white: #FFFFFF;
+    --bg: #0d0f10;
+    --card: #17191a;
+    --card-border: #26292b;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--mist);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 24px 18px 80px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--card-border);
+    margin-bottom: 22px;
+  }
+
+  .brand { display: flex; flex-direction: column; gap: 2px; }
+  .brand .mark {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--white);
+  }
+  .brand .mark span { color: var(--lime); }
+  .brand .sub {
+    font-size: 12.5px;
+    color: var(--mist);
+    opacity: 0.65;
+    letter-spacing: 0.3px;
+  }
+
+  .week-badge {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .week-badge .num {
+    font-size: 13px;
+    font-weight: 700;
+    background: var(--lime);
+    color: var(--black);
+    padding: 4px 10px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+  .week-badge .range {
+    display: block;
+    font-size: 11.5px;
+    color: var(--mist);
+    opacity: 0.6;
+    margin-top: 6px;
+  }
+
+  .intro {
+    background: var(--slate);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--mist);
+  }
+  .intro b { color: var(--white); }
+
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .pillar {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .pillar .ico { font-size: 17px; }
+  .pillar .label {
+    font-size: 10px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--mist);
+    opacity: 0.75;
+    margin-top: 4px;
+    font-weight: 700;
+  }
+
+  .deload-banner {
+    background: var(--lime);
+    color: var(--black);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: none;
+  }
+  .deload-banner.show { display: block; }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: 18px;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex: 0 0 auto;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    color: var(--mist);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: left;
+    min-width: 78px;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  .tab .d { display: block; opacity: 0.55; font-size: 10px; letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 3px; }
+  .tab .t { display: block; }
+  .tab.active {
+    background: var(--lime);
+    color: var(--black);
+    border-color: var(--lime);
+  }
+  .tab.active .d { opacity: 0.65; }
+  .tab.done:not(.active) { border-color: var(--lime-dim); }
+  .tab.done:not(.active) .t::after { content: " ✓"; color: var(--lime); }
+  .tab.rest { opacity: 0.7; }
+
+  .day-panel {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  .day-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .day-head h2 {
+    margin: 0;
+    font-size: 19px;
+    color: var(--white);
+    letter-spacing: 0.2px;
+  }
+  .day-head .focus-tag {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--lime);
+  }
+
+  .progress-track {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--slate);
+    overflow: hidden;
+    margin: 14px 0 18px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--lime);
+    width: 0%;
+    transition: width .25s ease;
+  }
+
+  .caution {
+    background: rgba(229, 225, 44, 0.08);
+    border: 1px solid rgba(229, 225, 44, 0.35);
+    color: var(--mist);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .caution b { color: var(--lime); }
+
+  .block-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--mist);
+    opacity: 0.55;
+    margin: 18px 0 8px;
+  }
+  .block-title:first-of-type { margin-top: 0; }
+
+  .exercise {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .exercise:last-child { border-bottom: none; }
+
+  .check {
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--slate-light);
+    margin-top: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    transition: background .15s, border-color .15s;
+  }
+  .check.checked {
+    background: var(--lime);
+    border-color: var(--lime);
+  }
+  .check.checked::after {
+    content: "✓";
+    color: var(--black);
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .ex-body { flex: 1; }
+  .ex-name {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--white);
+  }
+  .ex-name.checked { color: var(--mist); opacity: 0.5; text-decoration: line-through; }
+  .ex-meta {
+    font-size: 12.5px;
+    color: var(--lime);
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .ex-cue {
+    font-size: 12px;
+    color: var(--mist);
+    opacity: 0.65;
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  .day-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--card-border);
+  }
+
+  .btn {
+    background: transparent;
+    border: 1px solid var(--slate-light);
+    color: var(--mist);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+  }
+  .btn:hover { border-color: var(--lime); color: var(--lime); }
+
+  .week-summary {
+    font-size: 12px;
+    color: var(--mist);
+    opacity: 0.6;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--mist);
+    opacity: 0.4;
+    margin-top: 34px;
+  }
+
+  @media (max-width: 480px) {
+    .pillars { grid-template-columns: repeat(2, 1fr); }
+    .week-badge { text-align: right; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <div class="mark">ALIGN<span>.</span></div>
+      <div class="sub">weekly training that rotates itself</div>
+    </div>
+    <div class="week-badge">
+      <span class="num" id="weekNum">Week —</span>
+      <span class="range" id="weekRange"></span>
+    </div>
+  </header>
+
+  <div class="intro">
+    A new set of exercises is drawn from a rotating pool every ISO week, so the
+    plan keeps changing without you having to plan it. Four constants run through
+    every week: <b>posture</b>, <b>deep core</b>, <b>ACL-safe knee work</b>, and
+    <b>aerobic endurance</b> — with enough resistance training layered in to build
+    real muscle, without turning into a max-strength program.
+  </div>
+
+  <div class="pillars">
+    <div class="pillar"><div class="ico">🧍</div><div class="label">Posture</div></div>
+    <div class="pillar"><div class="ico">🔩</div><div class="label">Core</div></div>
+    <div class="pillar"><div class="ico">🦵</div><div class="label">ACL-Safe Knee</div></div>
+    <div class="pillar"><div class="ico">❤️</div><div class="label">Endurance</div></div>
+  </div>
+
+  <div class="deload-banner" id="deloadBanner">
+    Deload week — every 4th week. Cut load ~20%, slow the tempo, and treat any
+    rep range as a ceiling, not a target. Recovery is part of the program.
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="day-panel" id="dayPanel"></div>
+
+  <footer>Left knee, post-ACL — every knee exercise below stays pain-free range, no pivoting, no deep unsupported flexion. Stop if anything sharp or unstable shows up, and check with your PT before progressing load.</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- exercise pools ---------- */
+
+  const POSTURE = [
+    { name: "Band Pull-Aparts", meta: "3×15" },
+    { name: "Face Pulls (cable/band)", meta: "3×15" },
+    { name: "Prone Y-Raises", meta: "3×12" },
+    { name: "Prone T-Raises", meta: "3×12" },
+    { name: "Wall Slides", meta: "3×12" },
+    { name: "Wide-Grip Seated Row", meta: "3×12", cue: "pause and squeeze shoulder blades at the back" },
+    { name: "Dumbbell Reverse Fly", meta: "3×15" },
+    { name: "Chin Tucks", meta: "3×15" },
+    { name: "Thoracic Extension (foam roller)", meta: "2×10" },
+    { name: "Scapular Push-Up", meta: "3×12" },
+  ];
+
+  const CORE = [
+    { name: "Plank", meta: "3×45s" },
+    { name: "Side Plank", meta: "3×30s / side" },
+    { name: "Dead Bug", meta: "3×12 / side" },
+    { name: "Bird Dog", meta: "3×12 / side" },
+    { name: "Pallof Press", meta: "3×12 / side" },
+    { name: "Hollow Body Hold", meta: "3×20–30s" },
+    { name: "Slow Bicycle Crunch", meta: "3×20", cue: "control the tempo, no yanking the neck" },
+    { name: "Band Woodchop", meta: "3×12 / side" },
+    { name: "Stir-the-Pot (stability ball)", meta: "3×10 / direction" },
+    { name: "Weighted Sit-Up", meta: "3×15", cue: "controlled, no momentum" },
+  ];
+
+  const KNEE_STRENGTH = [
+    { name: "Glute Bridge", meta: "3×15" },
+    { name: "Single-Leg Glute Bridge", meta: "3×12 / leg" },
+    { name: "Terminal Knee Extension (band)", meta: "3×15 / leg" },
+    { name: "Wall Sit", meta: "3×30–45s", cue: "only the range that stays pain-free" },
+    { name: "Leg Press", meta: "3×12", cue: "moderate depth, controlled tempo" },
+    { name: "Step-Ups, low box", meta: "3×10 / leg", cue: "knee tracks over toes, no cave-in" },
+    { name: "Seated Leg Extension, light", meta: "3×15", cue: "full range only if pain-free" },
+    { name: "Calf Raises", meta: "3×15" },
+  ];
+
+  const KNEE_BALANCE = [
+    { name: "Single-Leg Balance Reach", meta: "3×8 / leg" },
+    { name: "Clamshells (band)", meta: "3×15 / side" },
+    { name: "Monster Walks (band, lateral)", meta: "3×12 steps / side" },
+    { name: "Single-Leg RDL, light", meta: "3×10 / leg", cue: "balance and control over load" },
+    { name: "Mini-Band Lateral Step-Outs", meta: "3×12 / side" },
+    { name: "Single-Leg Stance on Cushion", meta: "3×30s / leg" },
+    { name: "Standing Hip Abduction (cable/band)", meta: "3×15 / side" },
+    { name: "Slow Step-Downs, low step", meta: "3×8 / leg", cue: "eccentric control, knee stays aligned" },
+  ];
+
+  const PUSH = [
+    { name: "Dumbbell Bench Press", meta: "4×10" },
+    { name: "Push-Ups (or incline)", meta: "3×12–15" },
+    { name: "Overhead Dumbbell Press", meta: "3×10" },
+    { name: "Incline Dumbbell Press", meta: "3×10" },
+    { name: "Cable Chest Press", meta: "3×12" },
+    { name: "Triceps Pushdown", meta: "3×12" },
+    { name: "Dumbbell Floor Press", meta: "3×10" },
+    { name: "Landmine Press", meta: "3×10 / side" },
+  ];
+
+  const PULL = [
+    { name: "Lat Pulldown", meta: "3×12" },
+    { name: "Seated Cable Row", meta: "3×12" },
+    { name: "Single-Arm Dumbbell Row", meta: "3×10 / side" },
+    { name: "Assisted / Band Pull-Up", meta: "3×8–10" },
+    { name: "Straight-Arm Pulldown", meta: "3×12" },
+    { name: "Dumbbell Bicep Curl", meta: "3×12" },
+    { name: "Chest-Supported Row", meta: "3×12" },
+    { name: "Inverted Row", meta: "3×10" },
+  ];
+
+  const ENDURANCE_STEADY = [
+    { name: "Stationary Bike, steady state", meta: "25 min easy-moderate" },
+    { name: "Rowing Machine, steady state", meta: "20 min" },
+    { name: "Incline Treadmill Walk", meta: "30 min" },
+  ];
+
+  const ENDURANCE_INTERVAL = [
+    { name: "Stationary Bike Intervals", meta: "20 min · 1 min hard / 2 min easy" },
+    { name: "Elliptical Intervals", meta: "20 min · 1 min hard / 2 min easy" },
+    { name: "Easy-Pace Swim Intervals", meta: "20 min" },
+  ];
+
+  const MOBILITY = [
+    { name: "Cat-Cow", meta: "2×10" },
+    { name: "Hip Flexor Stretch", meta: "2×30s / side" },
+    { name: "Hamstring Stretch", meta: "2×30s / side" },
+    { name: "90/90 Hip Stretch", meta: "2×30s / side" },
+    { name: "Foam Roll — quads, IT band, calves", meta: "6 min" },
+    { name: "Doorway Chest Stretch", meta: "2×30s" },
+    { name: "Ankle Mobility Circles", meta: "2×10 / side" },
+    { name: "Child's Pose to Cobra Flow", meta: "2×8" },
+  ];
+
+  /* ---------- weekly day templates ---------- */
+
+  const TEMPLATES = [
+    { title: "Posture & Pull", focus: "Posture", rest: false,
+      blocks: [
+        { label: "Posture", pool: POSTURE, count: 3, salt: 1 },
+        { label: "Core", pool: CORE, count: 3, salt: 2 },
+      ] },
+    { title: "Knee-Safe Legs + Intervals", focus: "ACL-Safe Knee", rest: false, caution: true,
+      blocks: [
+        { label: "Lower body — strength & control", pool: KNEE_STRENGTH, count: 4, salt: 3 },
+        { label: "Endurance", pool: ENDURANCE_INTERVAL, count: 1, salt: 4 },
+      ] },
+    { title: "Core & Steady Endurance", focus: "Core", rest: false,
+      blocks: [
+        { label: "Core", pool: CORE, count: 3, salt: 5, offsetShift: 3 },
+        { label: "Endurance", pool: ENDURANCE_STEADY, count: 1, salt: 6 },
+      ] },
+    { title: "Upper Body Muscle", focus: "Muscle", rest: false,
+      blocks: [
+        { label: "Push", pool: PUSH, count: 2, salt: 7 },
+        { label: "Pull", pool: PULL, count: 2, salt: 8 },
+        { label: "Posture accessory", pool: POSTURE, count: 1, salt: 9 },
+      ] },
+    { title: "ACL Stability & Core", focus: "ACL-Safe Knee", rest: false, caution: true,
+      blocks: [
+        { label: "Lower body — balance & stability", pool: KNEE_BALANCE, count: 4, salt: 10 },
+        { label: "Core", pool: CORE, count: 2, salt: 11, offsetShift: 6 },
+      ] },
+    { title: "Endurance & Mobility", focus: "Endurance", rest: false,
+      blocks: [
+        { label: "Endurance", pool: ENDURANCE_STEADY, count: 1, salt: 12, offsetShift: 1 },
+        { label: "Mobility", pool: MOBILITY, count: 4, salt: 13 },
+      ] },
+    { title: "Active Recovery", focus: "Recovery", rest: true,
+      blocks: [
+        { label: "Mobility & stretching", pool: MOBILITY, count: 6, salt: 14, offsetShift: 4 },
+      ] },
+  ];
+
+  const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+  /* ---------- ISO week helpers ---------- */
+
+  function isoWeekInfo(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = (d.getUTCDay() + 6) % 7;
+    d.setUTCDate(d.getUTCDate() - dayNum + 3);
+    const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+    const week = 1 + Math.round(((d - firstThursday) / 86400000 - 3 + ((firstThursday.getUTCDay() + 6) % 7)) / 7);
+    const monday = new Date(date);
+    monday.setDate(date.getDate() - ((date.getDay() + 6) % 7));
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    return { year: d.getUTCFullYear(), week, monday, sunday };
+  }
+
+  function fmt(date) {
+    return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }
+
+  /* ---------- deterministic weekly pick ---------- */
+
+  function pickFromPool(pool, week, salt, count, offsetShift) {
+    const n = pool.length;
+    const offset = ((week * 5 + salt * 3 + (offsetShift || 0) * 11) % n + n) % n;
+    const picked = [];
+    for (let i = 0; i < count; i++) {
+      picked.push(pool[(offset + i) % n]);
+    }
+    return picked;
+  }
+
+  /* ---------- storage ---------- */
+
+  const STORAGE_KEY = "align:v1:checks";
+
+  function loadChecks() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+    catch (e) { return {}; }
+  }
+  function saveChecks(checks) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(checks));
+  }
+  let checks = loadChecks();
+
+  const RESHUFFLE_KEY = "align:v1:reshuffle";
+  function loadReshuffle() {
+    try { return JSON.parse(localStorage.getItem(RESHUFFLE_KEY)) || {}; }
+    catch (e) { return {}; }
+  }
+  function saveReshuffle(r) {
+    localStorage.setItem(RESHUFFLE_KEY, JSON.stringify(r));
+  }
+  let reshuffle = loadReshuffle();
+
+  /* ---------- state ---------- */
+
+  const today = new Date();
+  const info = isoWeekInfo(today);
+  const weekKey = info.year + "-W" + info.week;
+  const isDeload = info.week % 4 === 0;
+
+  let activeDay = (today.getDay() + 6) % 7; // Monday = 0
+
+  function buildDay(dayIndex) {
+    const tpl = TEMPLATES[dayIndex];
+    const bump = reshuffle[weekKey + ":" + dayIndex] || 0;
+    const exercises = [];
+    tpl.blocks.forEach((block) => {
+      const items = pickFromPool(block.pool, info.week + bump, block.salt, block.count, block.offsetShift);
+      items.forEach((ex) => exercises.push({ ...ex, blockLabel: block.label }));
+    });
+    return { tpl, exercises };
+  }
+
+  function dayCompletion(dayIndex) {
+    const { exercises } = buildDay(dayIndex);
+    if (exercises.length === 0) return 0;
+    let done = 0;
+    exercises.forEach((ex, i) => {
+      const key = weekKey + ":" + dayIndex + ":" + i + ":" + ex.name;
+      if (checks[key]) done++;
+    });
+    return done / exercises.length;
+  }
+
+  /* ---------- render ---------- */
+
+  const tabsEl = document.getElementById("tabs");
+  const panelEl = document.getElementById("dayPanel");
+
+  function renderHeader() {
+    document.getElementById("weekNum").textContent = "Week " + info.week + (isDeload ? " · Deload" : "");
+    document.getElementById("weekRange").textContent = fmt(info.monday) + " – " + fmt(info.sunday);
+    document.getElementById("deloadBanner").classList.toggle("show", isDeload);
+  }
+
+  function renderTabs() {
+    tabsEl.innerHTML = "";
+    TEMPLATES.forEach((tpl, i) => {
+      const btn = document.createElement("button");
+      const completion = dayCompletion(i);
+      btn.className = "tab" + (i === activeDay ? " active" : "") + (completion >= 1 ? " done" : "") + (tpl.rest ? " rest" : "");
+      btn.innerHTML = '<span class="d">' + DAY_NAMES[i].slice(0, 3) + '</span><span class="t">' + tpl.title + "</span>";
+      btn.addEventListener("click", () => { activeDay = i; renderTabs(); renderPanel(); });
+      tabsEl.appendChild(btn);
+    });
+  }
+
+  function renderPanel() {
+    const { tpl, exercises } = buildDay(activeDay);
+    const completion = dayCompletion(activeDay);
+
+    let html = "";
+    html += '<div class="day-head">';
+    html += '<div><div class="focus-tag">' + tpl.focus + " · " + DAY_NAMES[activeDay] + '</div><h2>' + tpl.title + "</h2></div>";
+    html += "</div>";
+    html += '<div class="progress-track"><div class="progress-fill" style="width:' + Math.round(completion * 100) + '%"></div></div>';
+
+    if (tpl.caution) {
+      html += '<div class="caution"><b>Knee-safe day —</b> stay in pain-free range only, no pivoting or deep unsupported flexion, and keep the knee tracking over the toes. Stop any exercise that feels sharp or unstable.</div>';
+    }
+    if (tpl.rest) {
+      html += '<div class="caution"><b>Recovery day —</b> light movement only. This is what lets the rest of the week actually add up.</div>';
+    }
+
+    let lastLabel = null;
+    exercises.forEach((ex, i) => {
+      if (ex.blockLabel !== lastLabel) {
+        html += '<div class="block-title">' + ex.blockLabel + "</div>";
+        lastLabel = ex.blockLabel;
+      }
+      const key = weekKey + ":" + activeDay + ":" + i + ":" + ex.name;
+      const isChecked = !!checks[key];
+      html += '<div class="exercise">';
+      html += '<div class="check' + (isChecked ? " checked" : "") + '" data-key="' + key + '"></div>';
+      html += '<div class="ex-body">';
+      html += '<div class="ex-name' + (isChecked ? " checked" : "") + '">' + ex.name + "</div>";
+      html += '<div class="ex-meta">' + ex.meta + "</div>";
+      if (ex.cue) html += '<div class="ex-cue">' + ex.cue + "</div>";
+      html += "</div></div>";
+    });
+
+    html += '<div class="day-actions">';
+    html += '<span class="week-summary">' + Math.round(completion * 100) + "% complete</span>";
+    html += '<button class="btn" id="shuffleBtn">Shuffle this day</button>';
+    html += "</div>";
+
+    panelEl.innerHTML = html;
+
+    panelEl.querySelectorAll(".check").forEach((el) => {
+      el.addEventListener("click", () => {
+        const key = el.getAttribute("data-key");
+        checks[key] = !checks[key];
+        saveChecks(checks);
+        renderPanel();
+        renderTabs();
+      });
+    });
+
+    document.getElementById("shuffleBtn").addEventListener("click", () => {
+      const rkey = weekKey + ":" + activeDay;
+      reshuffle[rkey] = (reshuffle[rkey] || 0) + 1;
+      saveReshuffle(reshuffle);
+      renderPanel();
+    });
+  }
+
+  renderHeader();
+  renderTabs();
+  renderPanel();
+})();
+</script>
+</body>
+</html>

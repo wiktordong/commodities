@@ -44,3 +44,6 @@ so the layout stays intact. Wire in a paid feed by extending `scripts/fetch_data
 - `scripts/generate_brief.py` — renders template, writes site + archive.
 - `.github/workflows/daily-brief.yml` — cron + Pages deploy.
 - `public/` — generated site (committed each run for archive).
+- `workout-app/` — standalone weekly workout program app (unrelated to the
+  brief, kept separate so the daily workflow never touches it). See
+  `workout-app/README.md`.
