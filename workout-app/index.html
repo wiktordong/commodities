@@ -1,682 +1,1207 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ALIGN — Weekly Training</title>
+<title>ALIGN Training</title>
 <style>
   :root {
-    --lime: #E5E12C;
-    --lime-dim: #b9b524;
-    --slate: #40494E;
-    --slate-light: #4d575d;
-    --mist: #D9D9D6;
-    --black: #000000;
-    --white: #FFFFFF;
-    --bg: #0d0f10;
-    --card: #17191a;
-    --card-border: #26292b;
+    color-scheme: dark;
+    --ink:      #0A0B09;
+    --card:     #141613;
+    --raised:   #1D201C;
+    --line:     #272B26;
+    --line-soft:#1F231E;
+    --lime:     #E5E12C;
+    --lime-deep:#8F8C1B;
+    --lime-ghost: rgba(229, 225, 44, 0.09);
+    --mist:     #D9D9D6;
+    --mute:     #878C82;
+    --mute-dim: #5C6158;
+    --slate:    #40494E;
+    --alert:    #E5E12C;
+
+    --sans: "Helvetica Neue", Helvetica, Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+    --r-lg: 22px;
+    --r-md: 16px;
+    --r-sm: 11px;
   }
 
   * { box-sizing: border-box; }
 
+  html { -webkit-text-size-adjust: 100%; }
+
   body {
     margin: 0;
-    background: var(--bg);
+    background: var(--ink);
     color: var(--mist);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--sans);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-variant-numeric: tabular-nums;
   }
 
-  .wrap {
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 24px 18px 80px;
-  }
-
-  header {
+  /* ambient ground so the phone column reads as a device on desktop */
+  .stage {
+    min-height: 100vh;
+    background:
+      radial-gradient(120% 55% at 50% -8%, rgba(229,225,44,0.055), transparent 62%),
+      var(--ink);
+    padding: 0 0 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 468px;
+    padding: 20px 16px 108px;
+    position: relative;
+  }
+
+  /* ---------- header ---------- */
+
+  .top {
+    display: flex;
     align-items: flex-start;
-    gap: 16px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--card-border);
-    margin-bottom: 22px;
-  }
-
-  .brand { display: flex; flex-direction: column; gap: 2px; }
-  .brand .mark {
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    color: var(--white);
-  }
-  .brand .mark span { color: var(--lime); }
-  .brand .sub {
-    font-size: 12.5px;
-    color: var(--mist);
-    opacity: 0.65;
-    letter-spacing: 0.3px;
-  }
-
-  .week-badge {
-    text-align: right;
-    flex-shrink: 0;
-  }
-  .week-badge .num {
-    font-size: 13px;
-    font-weight: 700;
-    background: var(--lime);
-    color: var(--black);
-    padding: 4px 10px;
-    border-radius: 999px;
-    display: inline-block;
-  }
-  .week-badge .range {
-    display: block;
-    font-size: 11.5px;
-    color: var(--mist);
-    opacity: 0.6;
-    margin-top: 6px;
-  }
-
-  .intro {
-    background: var(--slate);
-    border-radius: 14px;
-    padding: 16px 18px;
-    margin-bottom: 20px;
-    font-size: 13.5px;
-    line-height: 1.55;
-    color: var(--mist);
-  }
-  .intro b { color: var(--white); }
-
-  .pillars {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 24px;
-  }
-  .pillar {
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
-    padding: 10px 8px;
-    text-align: center;
-  }
-  .pillar .ico { font-size: 17px; }
-  .pillar .label {
-    font-size: 10px;
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-    color: var(--mist);
-    opacity: 0.75;
-    margin-top: 4px;
-    font-weight: 700;
-  }
-
-  .deload-banner {
-    background: var(--lime);
-    color: var(--black);
-    border-radius: 12px;
-    padding: 12px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    display: none;
-  }
-  .deload-banner.show { display: block; }
-
-  .tabs {
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-    margin-bottom: 18px;
-    scrollbar-width: none;
-  }
-  .tabs::-webkit-scrollbar { display: none; }
-
-  .tab {
-    flex: 0 0 auto;
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    color: var(--mist);
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 12.5px;
-    font-weight: 700;
-    cursor: pointer;
-    text-align: left;
-    min-width: 78px;
-    transition: background .15s, color .15s, border-color .15s;
-  }
-  .tab .d { display: block; opacity: 0.55; font-size: 10px; letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 3px; }
-  .tab .t { display: block; }
-  .tab.active {
-    background: var(--lime);
-    color: var(--black);
-    border-color: var(--lime);
-  }
-  .tab.active .d { opacity: 0.65; }
-  .tab.done:not(.active) { border-color: var(--lime-dim); }
-  .tab.done:not(.active) .t::after { content: " ✓"; color: var(--lime); }
-  .tab.rest { opacity: 0.7; }
-
-  .day-panel {
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 20px;
-  }
-
-  .day-head {
-    display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 4px;
+    gap: 14px;
+    padding: 6px 2px 20px;
   }
-  .day-head h2 {
-    margin: 0;
-    font-size: 19px;
-    color: var(--white);
-    letter-spacing: 0.2px;
-  }
-  .day-head .focus-tag {
+
+  .top-l { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+
+  .eyebrow {
     font-size: 10.5px;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
+    color: var(--mute);
+  }
+
+  .wordmark {
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    color: #fff;
+    line-height: 1;
+  }
+  .wordmark i {
+    font-style: normal;
     color: var(--lime);
   }
 
-  .progress-track {
-    height: 6px;
-    border-radius: 999px;
-    background: var(--slate);
-    overflow: hidden;
-    margin: 14px 0 18px;
+  .week-chip {
+    flex: 0 0 auto;
+    text-align: right;
   }
-  .progress-fill {
-    height: 100%;
+  .week-chip .pill {
+    display: inline-block;
     background: var(--lime);
-    width: 0%;
-    transition: width .25s ease;
+    color: #000;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    padding: 6px 13px;
+    border-radius: 999px;
+  }
+  .week-chip .pill.deload {
+    background: transparent;
+    color: var(--lime);
+    box-shadow: inset 0 0 0 1.5px var(--lime-deep);
+  }
+  .week-chip .dates {
+    display: block;
+    margin-top: 7px;
+    font-size: 11.5px;
+    color: var(--mute);
+    letter-spacing: 0.01em;
   }
 
-  .caution {
-    background: rgba(229, 225, 44, 0.08);
-    border: 1px solid rgba(229, 225, 44, 0.35);
-    color: var(--mist);
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 12.5px;
-    line-height: 1.5;
-    margin-bottom: 16px;
-  }
-  .caution b { color: var(--lime); }
+  /* ---------- stat tiles ---------- */
 
-  .block-title {
-    font-size: 11px;
+  .tiles {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr 1fr;
+    gap: 9px;
+    margin-bottom: 11px;
+  }
+
+  .tile {
+    background: var(--card);
+    border-radius: var(--r-md);
+    padding: 15px 14px 13px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 104px;
+  }
+  .tile.accent { background: var(--lime); }
+
+  .tile .fig {
+    font-size: 31px;
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 0.95;
+    color: #fff;
+  }
+  .tile .fig small {
+    font-size: 14px;
     font-weight: 700;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    color: var(--mist);
-    opacity: 0.55;
-    margin: 18px 0 8px;
+    letter-spacing: -0.02em;
+    margin-left: 1px;
   }
-  .block-title:first-of-type { margin-top: 0; }
+  .tile.accent .fig { color: #000; }
 
-  .exercise {
+  .tile .cap {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-top: 9px;
+  }
+  .tile.accent .cap { color: rgba(0,0,0,0.62); }
+
+  /* ring on the lead tile */
+  .ring-wrap { display: flex; align-items: center; gap: 11px; }
+  .ring { position: relative; width: 46px; height: 46px; flex: 0 0 auto; }
+  .ring svg { transform: rotate(-90deg); display: block; }
+  .ring .track { stroke: rgba(0,0,0,0.16); }
+  .ring .fill { stroke: #000; transition: stroke-dashoffset .45s cubic-bezier(.4,0,.2,1); }
+  .ring .val {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; letter-spacing: -0.03em; color: #000;
+  }
+
+  /* ---------- section heads ---------- */
+
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 22px 2px 11px;
+  }
+  .sec-head h2 {
+    margin: 0;
+    font-size: 15.5px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  .sec-head .note {
+    font-size: 11.5px;
+    color: var(--mute);
+    letter-spacing: 0.01em;
+  }
+
+  /* ---------- day rail ---------- */
+
+  .rail {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    padding: 2px 2px 8px;
+    margin: 0 -16px 4px;
+    padding-left: 16px;
+    padding-right: 16px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .rail::-webkit-scrollbar { display: none; }
+
+  .daybtn {
+    flex: 0 0 auto;
+    width: 60px;
+    background: var(--card);
+    border: none;
+    border-radius: 14px;
+    padding: 11px 8px 10px;
+    color: var(--mute);
+    font-family: inherit;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    transition: background .18s ease, color .18s ease;
+  }
+  .daybtn .dw {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .daybtn .dn {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--mist);
+    line-height: 1;
+  }
+  .daybtn .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--line);
+    transition: background .18s ease;
+  }
+  .daybtn.part .dot { background: var(--lime-deep); }
+  .daybtn.full .dot { background: var(--lime); }
+  .daybtn.today { box-shadow: inset 0 0 0 1.5px var(--line); }
+  .daybtn.sel { background: var(--lime); color: rgba(0,0,0,0.6); }
+  .daybtn.sel .dn { color: #000; }
+  .daybtn.sel .dot { background: rgba(0,0,0,0.28); }
+  .daybtn.sel.full .dot, .daybtn.sel.part .dot { background: #000; }
+  .daybtn:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+
+  /* ---------- session card ---------- */
+
+  .card {
+    background: var(--card);
+    border-radius: var(--r-lg);
+    padding: 19px 17px 17px;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .card-top .focus {
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--lime);
+  }
+  .card-top h3 {
+    margin: 7px 0 0;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    color: #fff;
+    text-wrap: balance;
+    line-height: 1.12;
+  }
+  .card-top .meta {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--mute);
+  }
+
+  .bar {
+    height: 5px;
+    border-radius: 999px;
+    background: var(--line-soft);
+    overflow: hidden;
+    margin: 16px 0 4px;
+  }
+  .bar span {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--lime);
+    border-radius: 999px;
+    transition: width .35s cubic-bezier(.4,0,.2,1);
+  }
+
+  .flag {
+    display: flex;
+    gap: 9px;
+    background: var(--lime-ghost);
+    border-radius: var(--r-sm);
+    padding: 11px 12px;
+    margin-top: 15px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--mist);
+  }
+  .flag .ic {
+    flex: 0 0 auto;
+    width: 16px; height: 16px;
+    margin-top: 1px;
+    color: var(--lime);
+  }
+  .flag b { color: var(--lime); font-weight: 700; }
+  .flag.calm { background: rgba(64,73,78,0.34); }
+  .flag.calm b { color: #fff; }
+  .flag.calm .ic { color: var(--mist); }
+
+  .blk {
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mute-dim);
+    padding: 20px 0 3px;
+  }
+
+  .ex {
     display: flex;
     align-items: flex-start;
     gap: 12px;
     padding: 11px 0;
-    border-bottom: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--line-soft);
   }
-  .exercise:last-child { border-bottom: none; }
+  .ex:last-of-type { border-bottom: none; }
 
-  .check {
+  .box {
     flex: 0 0 auto;
-    width: 22px;
-    height: 22px;
-    border-radius: 6px;
-    border: 2px solid var(--slate-light);
-    margin-top: 2px;
+    width: 23px; height: 23px;
+    margin-top: 1px;
+    border-radius: 7px;
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--line);
+    border: none;
+    padding: 0;
     cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .16s ease, box-shadow .16s ease;
+  }
+  .box svg { width: 12px; height: 12px; color: #000; opacity: 0; transform: scale(.6); transition: opacity .16s ease, transform .16s cubic-bezier(.34,1.56,.64,1); }
+  .box.on { background: var(--lime); box-shadow: inset 0 0 0 1.5px var(--lime); }
+  .box.on svg { opacity: 1; transform: scale(1); }
+  .box:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+
+  .ex-b { flex: 1; min-width: 0; }
+  .ex-n {
+    font-size: 14.5px;
+    font-weight: 650;
+    letter-spacing: -0.012em;
+    color: #fff;
+    line-height: 1.32;
+    transition: color .16s ease;
+  }
+  .ex.done .ex-n { color: var(--mute-dim); text-decoration: line-through; text-decoration-thickness: 1px; }
+  .ex-d {
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    color: var(--lime);
+    margin-top: 3px;
+  }
+  .ex.done .ex-d { color: var(--lime-deep); }
+  .ex-c {
+    font-size: 11.5px;
+    color: var(--mute);
+    margin-top: 4px;
+    line-height: 1.45;
+  }
+
+  .acts {
     display: flex;
+    gap: 8px;
+    margin-top: 17px;
+  }
+  .btn {
+    flex: 1;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: transparent;
-    transition: background .15s, border-color .15s;
-  }
-  .check.checked {
-    background: var(--lime);
-    border-color: var(--lime);
-  }
-  .check.checked::after {
-    content: "✓";
-    color: var(--black);
+    gap: 7px;
+    border: none;
+    border-radius: 13px;
+    padding: 13px 14px;
+    font-family: inherit;
     font-size: 13px;
     font-weight: 800;
+    letter-spacing: -0.012em;
+    cursor: pointer;
+    transition: filter .16s ease, background .16s ease;
   }
+  .btn svg { width: 14px; height: 14px; }
+  .btn-p { background: var(--lime); color: #000; }
+  .btn-s { flex: 0 0 auto; background: var(--raised); color: var(--mist); }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
 
-  .ex-body { flex: 1; }
-  .ex-name {
-    font-size: 14.5px;
-    font-weight: 600;
-    color: var(--white);
-  }
-  .ex-name.checked { color: var(--mist); opacity: 0.5; text-decoration: line-through; }
-  .ex-meta {
-    font-size: 12.5px;
-    color: var(--lime);
-    font-weight: 700;
-    margin-top: 2px;
-  }
-  .ex-cue {
-    font-size: 12px;
-    color: var(--mist);
-    opacity: 0.65;
-    margin-top: 3px;
-    line-height: 1.4;
-  }
+  /* ---------- week overview ---------- */
 
-  .day-actions {
+  .wk-row {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    background: var(--card);
+    border-radius: var(--r-md);
+    padding: 14px 15px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    transition: background .16s ease;
+  }
+  .wk-row:hover { background: var(--raised); }
+  .wk-row:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+  .wk-row .idx {
+    flex: 0 0 auto;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mute);
+    box-shadow: inset 0 0 0 1.5px var(--line);
+  }
+  .wk-row.full .idx { background: var(--lime); color: #000; box-shadow: none; }
+  .wk-row .wk-b { flex: 1; min-width: 0; }
+  .wk-row .wk-t {
+    display: block;
+    font-size: 14px; font-weight: 700; letter-spacing: -0.015em; color: #fff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .wk-row .wk-s {
+    display: block;
+    font-size: 11.5px; color: var(--mute); margin-top: 3px; line-height: 1.35;
+  }
+  .wk-row .wk-p { flex: 0 0 auto; font-size: 12px; font-weight: 800; color: var(--lime); }
+
+  /* ---------- progress view ---------- */
+
+  .grid-card { background: var(--card); border-radius: var(--r-lg); padding: 18px 17px; }
+
+  .months {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-top: 18px;
-    padding-top: 14px;
-    border-top: 1px solid var(--card-border);
-  }
-
-  .btn {
-    background: transparent;
-    border: 1px solid var(--slate-light);
-    color: var(--mist);
-    font-size: 12px;
+    font-size: 10.5px;
     font-weight: 700;
-    padding: 8px 14px;
-    border-radius: 999px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--mute-dim);
+    padding: 0 1px 10px;
+  }
+
+  .dots {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, auto);
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 3px;
+    padding-bottom: 2px;
+  }
+  .dots i {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: var(--line-soft);
+  }
+  .dots i.l1 { background: rgba(229,225,44,0.26); }
+  .dots i.l2 { background: rgba(229,225,44,0.55); }
+  .dots i.l3 { background: var(--lime); }
+
+  .legend {
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: 6px; padding-top: 13px;
+    font-size: 10.5px; color: var(--mute-dim);
+    letter-spacing: 0.04em;
+  }
+  .legend b { display: block; width: 9px; height: 9px; border-radius: 2.5px; }
+
+  .pil {
+    display: flex; align-items: center; gap: 13px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .pil:last-child { border-bottom: none; }
+  .pil .pn { flex: 1; font-size: 13.5px; font-weight: 650; color: #fff; letter-spacing: -0.01em; }
+  .pil .pb { flex: 0 0 96px; height: 5px; border-radius: 999px; background: var(--line-soft); overflow: hidden; }
+  .pil .pb span { display: block; height: 100%; background: var(--lime); border-radius: 999px; }
+  .pil .pv { flex: 0 0 34px; text-align: right; font-size: 12px; font-weight: 800; color: var(--mute); }
+
+  .principle {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--mute);
+    background: var(--card);
+    border-radius: var(--r-md);
+    padding: 15px 16px;
+  }
+  .principle b { color: var(--mist); font-weight: 700; }
+  .principle + .principle { margin-top: 8px; }
+
+  /* ---------- views + nav ---------- */
+
+  .view { display: none; }
+  .view.on { display: block; animation: fade .26s ease both; }
+  @keyframes fade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+  .nav {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 16px;
+    width: calc(100% - 32px);
+    max-width: 436px;
+    background: rgba(29,32,28,0.93);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 7px;
+    gap: 4px;
+    z-index: 20;
+    box-shadow: 0 12px 34px rgba(0,0,0,0.5);
+  }
+  .nav button {
+    background: transparent;
+    border: none;
+    border-radius: 14px;
+    padding: 9px 4px 8px;
+    color: var(--mute);
+    font-family: inherit;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
     cursor: pointer;
-    letter-spacing: 0.3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: background .16s ease, color .16s ease;
   }
-  .btn:hover { border-color: var(--lime); color: var(--lime); }
+  .nav button svg { width: 18px; height: 18px; }
+  .nav button.on { background: var(--lime); color: #000; }
+  .nav button:focus-visible { outline: 2px solid var(--lime); outline-offset: -2px; }
 
-  .week-summary {
-    font-size: 12px;
-    color: var(--mist);
-    opacity: 0.6;
-  }
-
-  footer {
-    text-align: center;
+  .foot {
     font-size: 11px;
-    color: var(--mist);
-    opacity: 0.4;
-    margin-top: 34px;
+    line-height: 1.55;
+    color: var(--mute-dim);
+    text-align: center;
+    padding: 26px 10px 0;
   }
 
-  @media (max-width: 480px) {
-    .pillars { grid-template-columns: repeat(2, 1fr); }
-    .week-badge { text-align: right; }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
   }
 </style>
-</head>
-<body>
-<div class="wrap">
 
-  <header>
-    <div class="brand">
-      <div class="mark">ALIGN<span>.</span></div>
-      <div class="sub">weekly training that rotates itself</div>
+<div class="stage">
+<div class="app">
+
+  <div class="top">
+    <div class="top-l">
+      <div class="eyebrow" id="eyebrow">Loading</div>
+      <div class="wordmark">ALIGN<i>.</i></div>
     </div>
-    <div class="week-badge">
-      <span class="num" id="weekNum">Week —</span>
-      <span class="range" id="weekRange"></span>
+    <div class="week-chip">
+      <span class="pill" id="weekPill">Week &mdash;</span>
+      <span class="dates" id="weekDates"></span>
     </div>
-  </header>
-
-  <div class="intro">
-    A new set of exercises is drawn from a rotating pool every ISO week, so the
-    plan keeps changing without you having to plan it. Four constants run through
-    every week: <b>posture</b>, <b>deep core</b>, <b>ACL-safe knee work</b>, and
-    <b>aerobic endurance</b> — with enough resistance training layered in to build
-    real muscle, without turning into a max-strength program.
   </div>
 
-  <div class="pillars">
-    <div class="pillar"><div class="ico">🧍</div><div class="label">Posture</div></div>
-    <div class="pillar"><div class="ico">🔩</div><div class="label">Core</div></div>
-    <div class="pillar"><div class="ico">🦵</div><div class="label">ACL-Safe Knee</div></div>
-    <div class="pillar"><div class="ico">❤️</div><div class="label">Endurance</div></div>
-  </div>
+  <!-- ============ TODAY ============ -->
+  <section class="view on" id="v-today">
+    <div class="tiles">
+      <div class="tile accent">
+        <div class="ring-wrap">
+          <div class="ring">
+            <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
+              <circle class="track" cx="23" cy="23" r="19" fill="none" stroke-width="4"></circle>
+              <circle class="fill" id="ring" cx="23" cy="23" r="19" fill="none" stroke-width="4"
+                      stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"></circle>
+            </svg>
+            <div class="val" id="ringVal">0%</div>
+          </div>
+          <div class="fig" id="tileDone">0<small>/0</small></div>
+        </div>
+        <div class="cap">Today&rsquo;s session</div>
+      </div>
+      <div class="tile">
+        <div class="fig" id="tileWeek">0<small>/7</small></div>
+        <div class="cap">Days this week</div>
+      </div>
+      <div class="tile">
+        <div class="fig" id="tileStreak">0</div>
+        <div class="cap">Week streak</div>
+      </div>
+    </div>
 
-  <div class="deload-banner" id="deloadBanner">
-    Deload week — every 4th week. Cut load ~20%, slow the tempo, and treat any
-    rep range as a ceiling, not a target. Recovery is part of the program.
-  </div>
+    <div class="rail" id="rail"></div>
 
-  <div class="tabs" id="tabs"></div>
-  <div class="day-panel" id="dayPanel"></div>
+    <div class="card" id="session"></div>
 
-  <footer>Left knee, post-ACL — every knee exercise below stays pain-free range, no pivoting, no deep unsupported flexion. Stop if anything sharp or unstable shows up, and check with your PT before progressing load.</footer>
+    <p class="foot">
+      Post-ACL left knee &mdash; every knee movement stays in pain-free range, no
+      pivoting, no deep unsupported flexion. Stop anything sharp or unstable, and
+      clear load progressions with your PT.
+    </p>
+  </section>
+
+  <!-- ============ WEEK ============ -->
+  <section class="view" id="v-week">
+    <div class="sec-head">
+      <h2>This week&rsquo;s split</h2>
+      <span class="note" id="weekNote"></span>
+    </div>
+    <div id="weekList"></div>
+
+    <div class="sec-head"><h2>Why it rotates</h2></div>
+    <div class="principle">
+      Each weekday keeps a fixed <b>job</b> &mdash; Tuesday is always knee-safe legs,
+      Thursday is always upper-body muscle. What changes is the <b>selection</b>:
+      exercises are drawn from a pool using the ISO week number, so the stimulus
+      moves every Monday without you replanning anything.
+    </div>
+    <div class="principle">
+      Because the draw is seeded by the week, it&rsquo;s <b>stable within the week</b>
+      &mdash; reload mid-session and you get the same workout, not a new one.
+      <b>Shuffle</b> rerolls a single day when you want variety sooner.
+    </div>
+    <div class="principle">
+      Every <b>4th week is a deload</b>: same movements, roughly 20% less load,
+      slower tempo, rep ranges treated as a ceiling. It&rsquo;s what keeps the knee
+      work and the endurance volume sustainable across months.
+    </div>
+  </section>
+
+  <!-- ============ PROGRESS ============ -->
+  <section class="view" id="v-prog">
+    <div class="sec-head">
+      <h2>Consistency</h2>
+      <span class="note">Last 26 weeks</span>
+    </div>
+    <div class="grid-card">
+      <div class="months" id="months"></div>
+      <div class="dots" id="dots"></div>
+      <div class="legend">
+        Less <b style="background:var(--line-soft)"></b>
+        <b style="background:rgba(229,225,44,0.26)"></b>
+        <b style="background:rgba(229,225,44,0.55)"></b>
+        <b style="background:var(--lime)"></b> More
+      </div>
+    </div>
+
+    <div class="sec-head">
+      <h2>Training balance</h2>
+      <span class="note">This week</span>
+    </div>
+    <div class="grid-card" id="pillars"></div>
+
+    <div class="sec-head"><h2>The four constants</h2></div>
+    <div class="principle">
+      <b>Posture</b> &mdash; scapular retraction, thoracic extension and neck
+      positioning appear every single week, because posture responds to frequency
+      far more than to intensity.
+    </div>
+    <div class="principle">
+      <b>Core</b> &mdash; weighted toward anti-rotation and anti-extension (Pallof,
+      dead bug, bird dog) over flexion volume. That&rsquo;s what actually transfers to
+      standing posture and to knee control.
+    </div>
+    <div class="principle">
+      <b>ACL-safe knee</b> &mdash; split across two days: one strength day
+      (bridges, TKEs, controlled step-ups) and one balance day (single-leg stance,
+      banded lateral work, slow step-downs), since post-ACL knees lose
+      proprioception as much as strength.
+    </div>
+    <div class="principle">
+      <b>Endurance with muscle</b> &mdash; resistance work sits in the 8&ndash;15 rep
+      hypertrophy range rather than 1&ndash;5 rep max work, paired with steady-state
+      and interval cardio. You build visible muscle without the joint cost of a
+      max-strength block.
+    </div>
+  </section>
+
+  <nav class="nav" role="tablist" aria-label="Sections">
+    <button class="on" data-v="today" role="tab" aria-selected="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+      Today
+    </button>
+    <button data-v="week" role="tab" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>
+      Week
+    </button>
+    <button data-v="prog" role="tab" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>
+      Progress
+    </button>
+  </nav>
+
+</div>
 </div>
 
 <script>
 (function () {
   "use strict";
 
-  /* ---------- exercise pools ---------- */
+  /* ============ pools ============ */
 
-  const POSTURE = [
-    { name: "Band Pull-Aparts", meta: "3×15" },
-    { name: "Face Pulls (cable/band)", meta: "3×15" },
-    { name: "Prone Y-Raises", meta: "3×12" },
-    { name: "Prone T-Raises", meta: "3×12" },
-    { name: "Wall Slides", meta: "3×12" },
-    { name: "Wide-Grip Seated Row", meta: "3×12", cue: "pause and squeeze shoulder blades at the back" },
-    { name: "Dumbbell Reverse Fly", meta: "3×15" },
-    { name: "Chin Tucks", meta: "3×15" },
-    { name: "Thoracic Extension (foam roller)", meta: "2×10" },
-    { name: "Scapular Push-Up", meta: "3×12" },
+  var POSTURE = [
+    { n: "Band Pull-Aparts", d: "3 \u00d7 15" },
+    { n: "Face Pulls", d: "3 \u00d7 15", c: "Elbows high, pull to the forehead, not the chin." },
+    { n: "Prone Y-Raise", d: "3 \u00d7 12" },
+    { n: "Prone T-Raise", d: "3 \u00d7 12" },
+    { n: "Wall Slides", d: "3 \u00d7 12", c: "Ribs down, keep both wrists in contact." },
+    { n: "Wide-Grip Seated Row", d: "3 \u00d7 12", c: "Pause and squeeze the shoulder blades." },
+    { n: "Dumbbell Reverse Fly", d: "3 \u00d7 15" },
+    { n: "Chin Tucks", d: "3 \u00d7 15", c: "Lengthen the back of the neck, no nodding." },
+    { n: "Thoracic Extension over Roller", d: "2 \u00d7 10" },
+    { n: "Scapular Push-Up", d: "3 \u00d7 12" }
   ];
 
-  const CORE = [
-    { name: "Plank", meta: "3×45s" },
-    { name: "Side Plank", meta: "3×30s / side" },
-    { name: "Dead Bug", meta: "3×12 / side" },
-    { name: "Bird Dog", meta: "3×12 / side" },
-    { name: "Pallof Press", meta: "3×12 / side" },
-    { name: "Hollow Body Hold", meta: "3×20–30s" },
-    { name: "Slow Bicycle Crunch", meta: "3×20", cue: "control the tempo, no yanking the neck" },
-    { name: "Band Woodchop", meta: "3×12 / side" },
-    { name: "Stir-the-Pot (stability ball)", meta: "3×10 / direction" },
-    { name: "Weighted Sit-Up", meta: "3×15", cue: "controlled, no momentum" },
+  var CORE = [
+    { n: "Plank", d: "3 \u00d7 45s", c: "Glutes on, ribs down, no sagging hips." },
+    { n: "Side Plank", d: "3 \u00d7 30s / side" },
+    { n: "Dead Bug", d: "3 \u00d7 12 / side", c: "Low back stays flat to the floor throughout." },
+    { n: "Bird Dog", d: "3 \u00d7 12 / side" },
+    { n: "Pallof Press", d: "3 \u00d7 12 / side", c: "Resist the rotation \u2014 that's the whole exercise." },
+    { n: "Hollow Body Hold", d: "3 \u00d7 25s" },
+    { n: "Slow Bicycle Crunch", d: "3 \u00d7 20", c: "Controlled tempo, hands off the neck." },
+    { n: "Band Woodchop", d: "3 \u00d7 12 / side" },
+    { n: "Stir-the-Pot", d: "3 \u00d7 10 / direction" },
+    { n: "Weighted Sit-Up", d: "3 \u00d7 15", c: "No momentum \u2014 lower slower than you lift." }
   ];
 
-  const KNEE_STRENGTH = [
-    { name: "Glute Bridge", meta: "3×15" },
-    { name: "Single-Leg Glute Bridge", meta: "3×12 / leg" },
-    { name: "Terminal Knee Extension (band)", meta: "3×15 / leg" },
-    { name: "Wall Sit", meta: "3×30–45s", cue: "only the range that stays pain-free" },
-    { name: "Leg Press", meta: "3×12", cue: "moderate depth, controlled tempo" },
-    { name: "Step-Ups, low box", meta: "3×10 / leg", cue: "knee tracks over toes, no cave-in" },
-    { name: "Seated Leg Extension, light", meta: "3×15", cue: "full range only if pain-free" },
-    { name: "Calf Raises", meta: "3×15" },
+  var KNEE_STR = [
+    { n: "Glute Bridge", d: "3 \u00d7 15" },
+    { n: "Single-Leg Glute Bridge", d: "3 \u00d7 12 / leg" },
+    { n: "Terminal Knee Extension", d: "3 \u00d7 15 / leg", c: "Band behind the knee, finish by locking out gently." },
+    { n: "Wall Sit", d: "3 \u00d7 35s", c: "Only to a depth that stays pain-free." },
+    { n: "Leg Press", d: "3 \u00d7 12", c: "Moderate depth, slow eccentric, never bounce." },
+    { n: "Low Box Step-Up", d: "3 \u00d7 10 / leg", c: "Knee tracks over the toes \u2014 no inward collapse." },
+    { n: "Seated Leg Extension, light", d: "3 \u00d7 15", c: "Full range only if it stays pain-free." },
+    { n: "Calf Raise", d: "3 \u00d7 15" }
   ];
 
-  const KNEE_BALANCE = [
-    { name: "Single-Leg Balance Reach", meta: "3×8 / leg" },
-    { name: "Clamshells (band)", meta: "3×15 / side" },
-    { name: "Monster Walks (band, lateral)", meta: "3×12 steps / side" },
-    { name: "Single-Leg RDL, light", meta: "3×10 / leg", cue: "balance and control over load" },
-    { name: "Mini-Band Lateral Step-Outs", meta: "3×12 / side" },
-    { name: "Single-Leg Stance on Cushion", meta: "3×30s / leg" },
-    { name: "Standing Hip Abduction (cable/band)", meta: "3×15 / side" },
-    { name: "Slow Step-Downs, low step", meta: "3×8 / leg", cue: "eccentric control, knee stays aligned" },
+  var KNEE_BAL = [
+    { n: "Single-Leg Balance Reach", d: "3 \u00d7 8 / leg" },
+    { n: "Banded Clamshell", d: "3 \u00d7 15 / side" },
+    { n: "Lateral Monster Walk", d: "3 \u00d7 12 steps / side" },
+    { n: "Single-Leg RDL, light", d: "3 \u00d7 10 / leg", c: "Balance and control over load." },
+    { n: "Mini-Band Lateral Step-Out", d: "3 \u00d7 12 / side" },
+    { n: "Single-Leg Stance on Cushion", d: "3 \u00d7 30s / leg", c: "Eyes closed only once it feels solid." },
+    { n: "Standing Hip Abduction", d: "3 \u00d7 15 / side" },
+    { n: "Slow Step-Down", d: "3 \u00d7 8 / leg", c: "5-second lower. Knee stays stacked over the foot." }
   ];
 
-  const PUSH = [
-    { name: "Dumbbell Bench Press", meta: "4×10" },
-    { name: "Push-Ups (or incline)", meta: "3×12–15" },
-    { name: "Overhead Dumbbell Press", meta: "3×10" },
-    { name: "Incline Dumbbell Press", meta: "3×10" },
-    { name: "Cable Chest Press", meta: "3×12" },
-    { name: "Triceps Pushdown", meta: "3×12" },
-    { name: "Dumbbell Floor Press", meta: "3×10" },
-    { name: "Landmine Press", meta: "3×10 / side" },
+  var PUSH = [
+    { n: "Dumbbell Bench Press", d: "4 \u00d7 10" },
+    { n: "Push-Ups", d: "3 \u00d7 12\u201315" },
+    { n: "Overhead Dumbbell Press", d: "3 \u00d7 10", c: "Ribs down \u2014 don't arch to find the range." },
+    { n: "Incline Dumbbell Press", d: "3 \u00d7 10" },
+    { n: "Cable Chest Press", d: "3 \u00d7 12" },
+    { n: "Triceps Pushdown", d: "3 \u00d7 12" },
+    { n: "Dumbbell Floor Press", d: "3 \u00d7 10" },
+    { n: "Landmine Press", d: "3 \u00d7 10 / side" }
   ];
 
-  const PULL = [
-    { name: "Lat Pulldown", meta: "3×12" },
-    { name: "Seated Cable Row", meta: "3×12" },
-    { name: "Single-Arm Dumbbell Row", meta: "3×10 / side" },
-    { name: "Assisted / Band Pull-Up", meta: "3×8–10" },
-    { name: "Straight-Arm Pulldown", meta: "3×12" },
-    { name: "Dumbbell Bicep Curl", meta: "3×12" },
-    { name: "Chest-Supported Row", meta: "3×12" },
-    { name: "Inverted Row", meta: "3×10" },
+  var PULL = [
+    { n: "Lat Pulldown", d: "3 \u00d7 12" },
+    { n: "Seated Cable Row", d: "3 \u00d7 12" },
+    { n: "Single-Arm Dumbbell Row", d: "3 \u00d7 10 / side" },
+    { n: "Assisted Pull-Up", d: "3 \u00d7 8\u201310" },
+    { n: "Straight-Arm Pulldown", d: "3 \u00d7 12" },
+    { n: "Dumbbell Curl", d: "3 \u00d7 12" },
+    { n: "Chest-Supported Row", d: "3 \u00d7 12", c: "Best posture-builder in the pull pool." },
+    { n: "Inverted Row", d: "3 \u00d7 10" }
   ];
 
-  const ENDURANCE_STEADY = [
-    { name: "Stationary Bike, steady state", meta: "25 min easy-moderate" },
-    { name: "Rowing Machine, steady state", meta: "20 min" },
-    { name: "Incline Treadmill Walk", meta: "30 min" },
+  var STEADY = [
+    { n: "Stationary Bike \u2014 steady", d: "25 min", c: "Conversational pace. Nasal breathing if you can hold it." },
+    { n: "Rowing Machine \u2014 steady", d: "20 min", c: "Legs\u2013hips\u2013arms sequence, tall spine." },
+    { n: "Incline Treadmill Walk", d: "30 min", c: "Knee-friendliest way to build the aerobic base." }
   ];
 
-  const ENDURANCE_INTERVAL = [
-    { name: "Stationary Bike Intervals", meta: "20 min · 1 min hard / 2 min easy" },
-    { name: "Elliptical Intervals", meta: "20 min · 1 min hard / 2 min easy" },
-    { name: "Easy-Pace Swim Intervals", meta: "20 min" },
+  var INTERVAL = [
+    { n: "Bike Intervals", d: "20 min", c: "1 min hard / 2 min easy. Zero impact on the knee." },
+    { n: "Elliptical Intervals", d: "20 min", c: "1 min hard / 2 min easy." },
+    { n: "Swim Intervals, easy pace", d: "20 min" }
   ];
 
-  const MOBILITY = [
-    { name: "Cat-Cow", meta: "2×10" },
-    { name: "Hip Flexor Stretch", meta: "2×30s / side" },
-    { name: "Hamstring Stretch", meta: "2×30s / side" },
-    { name: "90/90 Hip Stretch", meta: "2×30s / side" },
-    { name: "Foam Roll — quads, IT band, calves", meta: "6 min" },
-    { name: "Doorway Chest Stretch", meta: "2×30s" },
-    { name: "Ankle Mobility Circles", meta: "2×10 / side" },
-    { name: "Child's Pose to Cobra Flow", meta: "2×8" },
+  var MOBILITY = [
+    { n: "Cat-Cow", d: "2 \u00d7 10" },
+    { n: "Hip Flexor Stretch", d: "2 \u00d7 30s / side", c: "Tight hip flexors pull the pelvis into anterior tilt." },
+    { n: "Hamstring Stretch", d: "2 \u00d7 30s / side" },
+    { n: "90/90 Hip Rotation", d: "2 \u00d7 30s / side" },
+    { n: "Foam Roll \u2014 quads, ITB, calves", d: "6 min" },
+    { n: "Doorway Chest Stretch", d: "2 \u00d7 30s", c: "Opens what desk posture closes down." },
+    { n: "Ankle Mobility Rocks", d: "2 \u00d7 10 / side", c: "Ankle range protects the knee above it." },
+    { n: "Child's Pose to Cobra", d: "2 \u00d7 8" }
   ];
 
-  /* ---------- weekly day templates ---------- */
+  /* ============ week templates ============ */
 
-  const TEMPLATES = [
-    { title: "Posture & Pull", focus: "Posture", rest: false,
-      blocks: [
-        { label: "Posture", pool: POSTURE, count: 3, salt: 1 },
-        { label: "Core", pool: CORE, count: 3, salt: 2 },
-      ] },
-    { title: "Knee-Safe Legs + Intervals", focus: "ACL-Safe Knee", rest: false, caution: true,
-      blocks: [
-        { label: "Lower body — strength & control", pool: KNEE_STRENGTH, count: 4, salt: 3 },
-        { label: "Endurance", pool: ENDURANCE_INTERVAL, count: 1, salt: 4 },
-      ] },
-    { title: "Core & Steady Endurance", focus: "Core", rest: false,
-      blocks: [
-        { label: "Core", pool: CORE, count: 3, salt: 5, offsetShift: 3 },
-        { label: "Endurance", pool: ENDURANCE_STEADY, count: 1, salt: 6 },
-      ] },
-    { title: "Upper Body Muscle", focus: "Muscle", rest: false,
-      blocks: [
-        { label: "Push", pool: PUSH, count: 2, salt: 7 },
-        { label: "Pull", pool: PULL, count: 2, salt: 8 },
-        { label: "Posture accessory", pool: POSTURE, count: 1, salt: 9 },
-      ] },
-    { title: "ACL Stability & Core", focus: "ACL-Safe Knee", rest: false, caution: true,
-      blocks: [
-        { label: "Lower body — balance & stability", pool: KNEE_BALANCE, count: 4, salt: 10 },
-        { label: "Core", pool: CORE, count: 2, salt: 11, offsetShift: 6 },
-      ] },
-    { title: "Endurance & Mobility", focus: "Endurance", rest: false,
-      blocks: [
-        { label: "Endurance", pool: ENDURANCE_STEADY, count: 1, salt: 12, offsetShift: 1 },
-        { label: "Mobility", pool: MOBILITY, count: 4, salt: 13 },
-      ] },
-    { title: "Active Recovery", focus: "Recovery", rest: true,
-      blocks: [
-        { label: "Mobility & stretching", pool: MOBILITY, count: 6, salt: 14, offsetShift: 4 },
-      ] },
+  var TPL = [
+    { t: "Posture & Pull", f: "Posture", sub: "Upper back, rear delts, deep core",
+      b: [ { l: "Posture", p: POSTURE, k: 3, s: 1 },
+           { l: "Core", p: CORE, k: 3, s: 2 } ] },
+
+    { t: "Knee-Safe Legs", f: "ACL knee", sub: "Controlled loading + zero-impact intervals", knee: true,
+      b: [ { l: "Lower body \u2014 strength", p: KNEE_STR, k: 4, s: 3 },
+           { l: "Endurance", p: INTERVAL, k: 1, s: 4 } ] },
+
+    { t: "Core & Steady State", f: "Core", sub: "Anti-rotation work, aerobic base",
+      b: [ { l: "Core", p: CORE, k: 3, s: 5, o: 3 },
+           { l: "Endurance", p: STEADY, k: 1, s: 6 } ] },
+
+    { t: "Upper Body Muscle", f: "Hypertrophy", sub: "8\u201315 reps \u2014 size without max load",
+      b: [ { l: "Push", p: PUSH, k: 2, s: 7 },
+           { l: "Pull", p: PULL, k: 2, s: 8 },
+           { l: "Posture accessory", p: POSTURE, k: 1, s: 9 } ] },
+
+    { t: "Knee Stability & Core", f: "ACL knee", sub: "Balance, proprioception, hip control", knee: true,
+      b: [ { l: "Lower body \u2014 balance", p: KNEE_BAL, k: 4, s: 10 },
+           { l: "Core", p: CORE, k: 2, s: 11, o: 6 } ] },
+
+    { t: "Endurance & Mobility", f: "Endurance", sub: "Longer aerobic piece, full mobility flow",
+      b: [ { l: "Endurance", p: STEADY, k: 1, s: 12, o: 1 },
+           { l: "Mobility", p: MOBILITY, k: 4, s: 13 } ] },
+
+    { t: "Active Recovery", f: "Recovery", sub: "Light movement only", rest: true,
+      b: [ { l: "Mobility flow", p: MOBILITY, k: 6, s: 14, o: 4 } ] }
   ];
 
-  const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  var DW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-  /* ---------- ISO week helpers ---------- */
+  /* ============ week math ============ */
 
-  function isoWeekInfo(date) {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    const dayNum = (d.getUTCDay() + 6) % 7;
-    d.setUTCDate(d.getUTCDate() - dayNum + 3);
-    const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
-    const week = 1 + Math.round(((d - firstThursday) / 86400000 - 3 + ((firstThursday.getUTCDay() + 6) % 7)) / 7);
-    const monday = new Date(date);
-    monday.setDate(date.getDate() - ((date.getDay() + 6) % 7));
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    return { year: d.getUTCFullYear(), week, monday, sunday };
+  function isoWeek(date) {
+    var d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    var dn = (d.getUTCDay() + 6) % 7;
+    d.setUTCDate(d.getUTCDate() - dn + 3);
+    var ft = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+    var w = 1 + Math.round(((d - ft) / 864e5 - 3 + ((ft.getUTCDay() + 6) % 7)) / 7);
+    return { y: d.getUTCFullYear(), w: w };
+  }
+  function mondayOf(date) {
+    var m = new Date(date);
+    m.setHours(0, 0, 0, 0);
+    m.setDate(m.getDate() - ((m.getDay() + 6) % 7));
+    return m;
+  }
+  function addDays(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+  function fmtD(d) { return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }); }
+
+  /* ============ deterministic draw ============ */
+
+  function draw(pool, week, salt, count, shift) {
+    var n = pool.length;
+    var off = (((week * 5 + salt * 3 + (shift || 0) * 11) % n) + n) % n;
+    var out = [];
+    for (var i = 0; i < count; i++) out.push(pool[(off + i) % n]);
+    return out;
   }
 
-  function fmt(date) {
-    return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  /* ============ storage ============ */
+
+  var CK = "align.v2.checks", RK = "align.v2.shuffle";
+  function read(k) { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch (e) { return {}; } }
+  function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  var checks = read(CK), shuffles = read(RK);
+
+  /* ============ state ============ */
+
+  var now = new Date();
+  var info = isoWeek(now);
+  var wkKey = info.y + "-W" + info.w;
+  var deload = info.w % 4 === 0;
+  var mon = mondayOf(now);
+  var todayIdx = (now.getDay() + 6) % 7;
+  var sel = todayIdx;
+
+  function keyFor(y, w, day, i, name) { return y + "-W" + w + "|" + day + "|" + i + "|" + name; }
+
+  function build(day, week, wkk) {
+    var t = TPL[day];
+    var bump = shuffles[wkk + "|" + day] || 0;
+    var list = [];
+    t.b.forEach(function (blk) {
+      draw(blk.p, week + bump, blk.s, blk.k, blk.o).forEach(function (e) {
+        list.push({ n: e.n, d: e.d, c: e.c, l: blk.l });
+      });
+    });
+    return { t: t, list: list };
   }
 
-  /* ---------- deterministic weekly pick ---------- */
+  function ratio(day, y, w, wkk) {
+    var built = build(day, w, wkk);
+    if (!built.list.length) return 0;
+    var done = 0;
+    built.list.forEach(function (e, i) {
+      if (checks[keyFor(y, w, day, i, e.n)]) done++;
+    });
+    return done / built.list.length;
+  }
 
-  function pickFromPool(pool, week, salt, count, offsetShift) {
-    const n = pool.length;
-    const offset = ((week * 5 + salt * 3 + (offsetShift || 0) * 11) % n + n) % n;
-    const picked = [];
-    for (let i = 0; i < count; i++) {
-      picked.push(pool[(offset + i) % n]);
+  /* ============ render: header + tiles ============ */
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function renderHead() {
+    $("eyebrow").textContent = now.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+    var pill = $("weekPill");
+    pill.textContent = deload ? "Week " + info.w + " \u00b7 Deload" : "Week " + info.w;
+    pill.className = deload ? "pill deload" : "pill";
+    $("weekDates").textContent = fmtD(mon) + " \u2013 " + fmtD(addDays(mon, 6));
+  }
+
+  function renderTiles() {
+    var built = build(sel, info.w, wkKey);
+    var done = 0;
+    built.list.forEach(function (e, i) { if (checks[keyFor(info.y, info.w, sel, i, e.n)]) done++; });
+    var r = built.list.length ? done / built.list.length : 0;
+
+    $("tileDone").innerHTML = done + "<small>/" + built.list.length + "</small>";
+    $("ringVal").textContent = Math.round(r * 100) + "%";
+    var C = 2 * Math.PI * 19;
+    $("ring").style.strokeDashoffset = String(C * (1 - r));
+
+    var daysDone = 0;
+    for (var d = 0; d < 7; d++) if (ratio(d, info.y, info.w, wkKey) >= 1) daysDone++;
+    $("tileWeek").innerHTML = daysDone + "<small>/7</small>";
+
+    // week streak: consecutive prior weeks (incl. current) with >= 3 completed days
+    var streak = 0;
+    for (var back = 0; back < 60; back++) {
+      var m = addDays(mon, -7 * back);
+      var wi = isoWeek(m);
+      var kk = wi.y + "-W" + wi.w;
+      var c = 0;
+      for (var dd = 0; dd < 7; dd++) if (ratio(dd, wi.y, wi.w, kk) >= 1) c++;
+      if (c >= 3) streak++;
+      else if (back > 0) break;
+      else if (c < 3) break;
     }
-    return picked;
+    $("tileStreak").textContent = String(streak);
   }
 
-  /* ---------- storage ---------- */
+  /* ============ render: rail ============ */
 
-  const STORAGE_KEY = "align:v1:checks";
-
-  function loadChecks() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
-    catch (e) { return {}; }
-  }
-  function saveChecks(checks) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(checks));
-  }
-  let checks = loadChecks();
-
-  const RESHUFFLE_KEY = "align:v1:reshuffle";
-  function loadReshuffle() {
-    try { return JSON.parse(localStorage.getItem(RESHUFFLE_KEY)) || {}; }
-    catch (e) { return {}; }
-  }
-  function saveReshuffle(r) {
-    localStorage.setItem(RESHUFFLE_KEY, JSON.stringify(r));
-  }
-  let reshuffle = loadReshuffle();
-
-  /* ---------- state ---------- */
-
-  const today = new Date();
-  const info = isoWeekInfo(today);
-  const weekKey = info.year + "-W" + info.week;
-  const isDeload = info.week % 4 === 0;
-
-  let activeDay = (today.getDay() + 6) % 7; // Monday = 0
-
-  function buildDay(dayIndex) {
-    const tpl = TEMPLATES[dayIndex];
-    const bump = reshuffle[weekKey + ":" + dayIndex] || 0;
-    const exercises = [];
-    tpl.blocks.forEach((block) => {
-      const items = pickFromPool(block.pool, info.week + bump, block.salt, block.count, block.offsetShift);
-      items.forEach((ex) => exercises.push({ ...ex, blockLabel: block.label }));
-    });
-    return { tpl, exercises };
-  }
-
-  function dayCompletion(dayIndex) {
-    const { exercises } = buildDay(dayIndex);
-    if (exercises.length === 0) return 0;
-    let done = 0;
-    exercises.forEach((ex, i) => {
-      const key = weekKey + ":" + dayIndex + ":" + i + ":" + ex.name;
-      if (checks[key]) done++;
-    });
-    return done / exercises.length;
-  }
-
-  /* ---------- render ---------- */
-
-  const tabsEl = document.getElementById("tabs");
-  const panelEl = document.getElementById("dayPanel");
-
-  function renderHeader() {
-    document.getElementById("weekNum").textContent = "Week " + info.week + (isDeload ? " · Deload" : "");
-    document.getElementById("weekRange").textContent = fmt(info.monday) + " – " + fmt(info.sunday);
-    document.getElementById("deloadBanner").classList.toggle("show", isDeload);
-  }
-
-  function renderTabs() {
-    tabsEl.innerHTML = "";
-    TEMPLATES.forEach((tpl, i) => {
-      const btn = document.createElement("button");
-      const completion = dayCompletion(i);
-      btn.className = "tab" + (i === activeDay ? " active" : "") + (completion >= 1 ? " done" : "") + (tpl.rest ? " rest" : "");
-      btn.innerHTML = '<span class="d">' + DAY_NAMES[i].slice(0, 3) + '</span><span class="t">' + tpl.title + "</span>";
-      btn.addEventListener("click", () => { activeDay = i; renderTabs(); renderPanel(); });
-      tabsEl.appendChild(btn);
-    });
-  }
-
-  function renderPanel() {
-    const { tpl, exercises } = buildDay(activeDay);
-    const completion = dayCompletion(activeDay);
-
-    let html = "";
-    html += '<div class="day-head">';
-    html += '<div><div class="focus-tag">' + tpl.focus + " · " + DAY_NAMES[activeDay] + '</div><h2>' + tpl.title + "</h2></div>";
-    html += "</div>";
-    html += '<div class="progress-track"><div class="progress-fill" style="width:' + Math.round(completion * 100) + '%"></div></div>';
-
-    if (tpl.caution) {
-      html += '<div class="caution"><b>Knee-safe day —</b> stay in pain-free range only, no pivoting or deep unsupported flexion, and keep the knee tracking over the toes. Stop any exercise that feels sharp or unstable.</div>';
+  function renderRail() {
+    var rail = $("rail");
+    rail.innerHTML = "";
+    for (var i = 0; i < 7; i++) {
+      (function (i) {
+        var r = ratio(i, info.y, info.w, wkKey);
+        var b = document.createElement("button");
+        var cls = "daybtn";
+        if (r >= 1) cls += " full"; else if (r > 0) cls += " part";
+        if (i === todayIdx) cls += " today";
+        if (i === sel) cls += " sel";
+        b.className = cls;
+        b.setAttribute("aria-label", DW[i] + ", " + TPL[i].t);
+        b.innerHTML = '<span class="dw">' + DW[i] + '</span>' +
+                      '<span class="dn">' + addDays(mon, i).getDate() + '</span>' +
+                      '<span class="dot"></span>';
+        b.addEventListener("click", function () { sel = i; renderAll(); });
+        rail.appendChild(b);
+      })(i);
     }
-    if (tpl.rest) {
-      html += '<div class="caution"><b>Recovery day —</b> light movement only. This is what lets the rest of the week actually add up.</div>';
+  }
+
+  /* ============ render: session ============ */
+
+  var CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5 9.5 18 20 6.5"/></svg>';
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+
+  function renderSession() {
+    var built = build(sel, info.w, wkKey);
+    var t = built.t, list = built.list;
+    var done = 0;
+    list.forEach(function (e, i) { if (checks[keyFor(info.y, info.w, sel, i, e.n)]) done++; });
+    var r = list.length ? done / list.length : 0;
+
+    var h = "";
+    h += '<div class="card-top"><div>';
+    h += '<div class="focus">' + esc(t.f) + " \u00b7 " + DW[sel] + "</div>";
+    h += "<h3>" + esc(t.t) + "</h3>";
+    h += '<div class="meta">' + esc(t.sub) + "</div>";
+    h += "</div></div>";
+
+    h += '<div class="bar"><span style="width:' + (r * 100).toFixed(1) + '%"></span></div>';
+
+    if (deload) {
+      h += '<div class="flag"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 8v5"/><path d="M12 16.5v.01"/><circle cx="12" cy="12" r="9"/></svg>' +
+           "<div><b>Deload week.</b> Same movements, about 20% lighter, slower tempo. " +
+           "Treat every rep range below as a ceiling rather than a target.</div></div>";
+    }
+    if (t.knee) {
+      h += '<div class="flag"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 19.5h18L12 3z"/><path d="M12 10v4M12 17v.01"/></svg>' +
+           "<div><b>Left knee day.</b> Pain-free range only, no pivoting or deep " +
+           "unsupported flexion, knee tracking over the toes. Stop anything sharp or unstable.</div></div>";
+    }
+    if (t.rest) {
+      h += '<div class="flag calm"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>' +
+           "<div><b>Recovery day.</b> Light movement only \u2014 this is what makes the " +
+           "other six days add up instead of accumulate.</div></div>";
     }
 
-    let lastLabel = null;
-    exercises.forEach((ex, i) => {
-      if (ex.blockLabel !== lastLabel) {
-        html += '<div class="block-title">' + ex.blockLabel + "</div>";
-        lastLabel = ex.blockLabel;
-      }
-      const key = weekKey + ":" + activeDay + ":" + i + ":" + ex.name;
-      const isChecked = !!checks[key];
-      html += '<div class="exercise">';
-      html += '<div class="check' + (isChecked ? " checked" : "") + '" data-key="' + key + '"></div>';
-      html += '<div class="ex-body">';
-      html += '<div class="ex-name' + (isChecked ? " checked" : "") + '">' + ex.name + "</div>";
-      html += '<div class="ex-meta">' + ex.meta + "</div>";
-      if (ex.cue) html += '<div class="ex-cue">' + ex.cue + "</div>";
-      html += "</div></div>";
+    var last = null;
+    list.forEach(function (e, i) {
+      if (e.l !== last) { h += '<div class="blk">' + esc(e.l) + "</div>"; last = e.l; }
+      var k = keyFor(info.y, info.w, sel, i, e.n);
+      var on = !!checks[k];
+      h += '<div class="ex' + (on ? " done" : "") + '">';
+      h += '<button class="box' + (on ? " on" : "") + '" data-k="' + esc(k) + '" role="checkbox" aria-checked="' +
+           (on ? "true" : "false") + '" aria-label="' + esc(e.n) + '">' + CHECK_SVG + "</button>";
+      h += '<div class="ex-b"><div class="ex-n">' + esc(e.n) + "</div>";
+      h += '<div class="ex-d">' + esc(e.d) + "</div>";
+      if (e.c) h += '<div class="ex-c">' + esc(e.c) + "</div>";
+      h += "</div></div>";
     });
 
-    html += '<div class="day-actions">';
-    html += '<span class="week-summary">' + Math.round(completion * 100) + "% complete</span>";
-    html += '<button class="btn" id="shuffleBtn">Shuffle this day</button>';
-    html += "</div>";
+    var allDone = done === list.length && list.length > 0;
+    h += '<div class="acts">';
+    h += '<button class="btn btn-p" id="markAll">' +
+         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5 9.5 18 20 6.5"/></svg>' +
+         (allDone ? "Clear session" : "Mark all done") + "</button>";
+    h += '<button class="btn btn-s" id="shuf" aria-label="Shuffle this day">' +
+         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg>' +
+         "Shuffle</button>";
+    h += "</div>";
 
-    panelEl.innerHTML = html;
+    var card = $("session");
+    card.innerHTML = h;
 
-    panelEl.querySelectorAll(".check").forEach((el) => {
-      el.addEventListener("click", () => {
-        const key = el.getAttribute("data-key");
-        checks[key] = !checks[key];
-        saveChecks(checks);
-        renderPanel();
-        renderTabs();
+    card.querySelectorAll(".box").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var k = b.getAttribute("data-k");
+        if (checks[k]) delete checks[k]; else checks[k] = 1;
+        write(CK, checks);
+        renderAll();
       });
     });
 
-    document.getElementById("shuffleBtn").addEventListener("click", () => {
-      const rkey = weekKey + ":" + activeDay;
-      reshuffle[rkey] = (reshuffle[rkey] || 0) + 1;
-      saveReshuffle(reshuffle);
-      renderPanel();
+    $("markAll").addEventListener("click", function () {
+      list.forEach(function (e, i) {
+        var k = keyFor(info.y, info.w, sel, i, e.n);
+        if (allDone) delete checks[k]; else checks[k] = 1;
+      });
+      write(CK, checks);
+      renderAll();
+    });
+
+    $("shuf").addEventListener("click", function () {
+      var rk = wkKey + "|" + sel;
+      shuffles[rk] = (shuffles[rk] || 0) + 1;
+      write(RK, shuffles);
+      // dropping stale checks for this day keeps progress honest after a reroll
+      Object.keys(checks).forEach(function (k) {
+        if (k.indexOf(info.y + "-W" + info.w + "|" + sel + "|") === 0) delete checks[k];
+      });
+      write(CK, checks);
+      renderAll();
     });
   }
 
-  renderHeader();
-  renderTabs();
-  renderPanel();
+  /* ============ render: week view ============ */
+
+  function renderWeek() {
+    $("weekNote").textContent = deload ? "Deload \u00b7 lighter load" : "Week " + info.w + " selection";
+    var out = "";
+    for (var i = 0; i < 7; i++) {
+      var r = ratio(i, info.y, info.w, wkKey);
+      var t = TPL[i];
+      out += '<button class="wk-row' + (r >= 1 ? " full" : "") + '" data-d="' + i + '">';
+      out += '<span class="idx">' + DW[i] + "</span>";
+      out += '<span class="wk-b"><span class="wk-t">' + esc(t.t) + "</span>" +
+             '<span class="wk-s">' + esc(t.sub) + "</span></span>";
+      out += '<span class="wk-p">' + Math.round(r * 100) + "%</span>";
+      out += "</button>";
+    }
+    var el = $("weekList");
+    el.innerHTML = out;
+    el.querySelectorAll(".wk-row").forEach(function (b) {
+      b.addEventListener("click", function () {
+        sel = parseInt(b.getAttribute("data-d"), 10);
+        show("today");
+        renderAll();
+      });
+    });
+  }
+
+  /* ============ render: progress ============ */
+
+  function renderProgress() {
+    var weeks = 26;
+    var startMon = addDays(mon, -7 * (weeks - 1));
+
+    var mHtml = "", seen = {};
+    for (var w = 0; w < weeks; w++) {
+      var d = addDays(startMon, w * 7);
+      var label = d.toLocaleDateString(undefined, { month: "short" });
+      if (!seen[label]) { seen[label] = 1; mHtml += "<span>" + label + "</span>"; }
+    }
+    $("months").innerHTML = mHtml;
+
+    var g = "";
+    for (var wi2 = 0; wi2 < weeks; wi2++) {
+      var wm = addDays(startMon, wi2 * 7);
+      var winfo = isoWeek(wm);
+      var kk = winfo.y + "-W" + winfo.w;
+      for (var dd = 0; dd < 7; dd++) {
+        var rr = ratio(dd, winfo.y, winfo.w, kk);
+        var lvl = rr >= 1 ? "l3" : rr >= 0.5 ? "l2" : rr > 0 ? "l1" : "";
+        g += '<i class="' + lvl + '"></i>';
+      }
+    }
+    $("dots").innerHTML = g;
+
+    // pillar balance for the current week
+    var tally = { Posture: 0, Core: 0, "ACL knee": 0, Endurance: 0, Mobility: 0, Muscle: 0 };
+    var totals = { Posture: 0, Core: 0, "ACL knee": 0, Endurance: 0, Mobility: 0, Muscle: 0 };
+    function bucket(label) {
+      if (label.indexOf("Posture") === 0) return "Posture";
+      if (label.indexOf("Core") === 0) return "Core";
+      if (label.indexOf("Lower body") === 0) return "ACL knee";
+      if (label.indexOf("Endurance") === 0) return "Endurance";
+      if (label.indexOf("Mobility") === 0) return "Mobility";
+      return "Muscle";
+    }
+    for (var day = 0; day < 7; day++) {
+      var built = build(day, info.w, wkKey);
+      built.list.forEach(function (e, i) {
+        var b = bucket(e.l);
+        totals[b]++;
+        if (checks[keyFor(info.y, info.w, day, i, e.n)]) tally[b]++;
+      });
+    }
+    var ph = "";
+    Object.keys(totals).forEach(function (k) {
+      if (!totals[k]) return;
+      var pct = Math.round((tally[k] / totals[k]) * 100);
+      ph += '<div class="pil"><span class="pn">' + esc(k) + "</span>" +
+            '<span class="pb"><span style="width:' + pct + '%"></span></span>' +
+            '<span class="pv">' + pct + "%</span></div>";
+    });
+    $("pillars").innerHTML = ph;
+  }
+
+  /* ============ views ============ */
+
+  function show(v) {
+    ["today", "week", "prog"].forEach(function (name) {
+      $("v-" + name).classList.toggle("on", name === v);
+    });
+    document.querySelectorAll(".nav button").forEach(function (b) {
+      var on = b.getAttribute("data-v") === v;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  document.querySelectorAll(".nav button").forEach(function (b) {
+    b.addEventListener("click", function () { show(b.getAttribute("data-v")); renderAll(); });
+  });
+
+  function renderAll() {
+    renderHead();
+    renderTiles();
+    renderRail();
+    renderSession();
+    renderWeek();
+    renderProgress();
+  }
+
+  renderAll();
 })();
 </script>
-</body>
-</html>
