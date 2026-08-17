@@ -525,6 +525,26 @@
   .pil .pb span { display: block; height: 100%; background: var(--lime); border-radius: 999px; }
   .pil .pv { flex: 0 0 34px; text-align: right; font-size: 12px; font-weight: 800; color: var(--mute); }
 
+  /* label / figure rows for the personal targets */
+  .kv {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--line-soft);
+  }
+  .kv:last-child { border-bottom: none; }
+  .kv .k {
+    flex: 1; min-width: 0;
+    font-size: 13.5px; font-weight: 650; color: #fff; letter-spacing: -0.01em;
+  }
+  .kv .k .sub {
+    display: block; margin-top: 4px;
+    font-size: 11.5px; font-weight: 400; color: var(--mute);
+    letter-spacing: 0; line-height: 1.45;
+  }
+  .kv .v {
+    flex: 0 0 auto; white-space: nowrap;
+    font-size: 14.5px; font-weight: 800; color: var(--lime); letter-spacing: -0.025em;
+  }
+
   .principle {
     font-size: 12.5px;
     line-height: 1.6;
@@ -732,6 +752,68 @@
       <b>Endurance</b> &mdash; steady-state and intervals stay in every week, both
       because you asked for the engine and because the conditioning is what keeps
       body fat low enough for the muscle to actually show.
+    </div>
+
+    <div class="sec-head">
+      <h2>Your numbers</h2>
+      <span class="note">179 cm &middot; 78 kg</span>
+    </div>
+    <div class="grid-card">
+      <div class="kv">
+        <span class="k">Lean mass
+          <span class="sub">About 67 kg at an estimated 13&ndash;14% body fat</span>
+        </span>
+        <span class="v">~67 kg</span>
+      </div>
+      <div class="kv">
+        <span class="k">FFMI
+          <span class="sub">Well-trained. Natural ceiling sits near 25, so there is room</span>
+        </span>
+        <span class="v">21</span>
+      </div>
+      <div class="kv">
+        <span class="k">Maintenance
+          <span class="sub">Estimated from lean mass across 5&ndash;6 sessions a week</span>
+        </span>
+        <span class="v">~2,900 kcal</span>
+      </div>
+      <div class="kv">
+        <span class="k">Building target
+          <span class="sub">A small surplus &mdash; enough to grow, not enough to blur the waist</span>
+        </span>
+        <span class="v">3,100&ndash;3,200</span>
+      </div>
+      <div class="kv">
+        <span class="k">Protein
+          <span class="sub">Roughly 2 g per kg of bodyweight</span>
+        </span>
+        <span class="v">155&ndash;165 g</span>
+      </div>
+      <div class="kv">
+        <span class="k">Fat
+          <span class="sub">Hormonal floor; the rest of the budget goes to carbs</span>
+        </span>
+        <span class="v">70&ndash;80 g</span>
+      </div>
+      <div class="kv">
+        <span class="k">Carbs
+          <span class="sub">Fuel for the intervals and the lifting volume</span>
+        </span>
+        <span class="v">~430 g</span>
+      </div>
+      <div class="kv">
+        <span class="k">Rate of gain
+          <span class="sub">Anything faster is mostly fat, and undoes the taper</span>
+        </span>
+        <span class="v">0.2&ndash;0.3 kg/mo</span>
+      </div>
+    </div>
+    <div class="principle">
+      Calorie estimates carry a <b>10&ndash;15% error</b> in either direction, so treat
+      2,900 as a starting hypothesis rather than a fact. Hold it for two to three
+      weeks and watch the trend: weight drifting up around
+      <b>0.25 kg a month</b> means it&rsquo;s right. Flat means add 200. Climbing
+      faster than half a kilo a month means take 200 away.
     </div>
 
     <div class="sec-head"><h2>Your current priority</h2></div>
