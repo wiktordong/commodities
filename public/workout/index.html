@@ -1,4 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ALIGN Training</title>
+<meta name="description" content="Weekly workout program built around posture, deep core, ACL-safe knee work and endurance. Rotates itself every week.">
+<meta name="theme-color" content="#0A0B09">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ALIGN">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+</head>
+<body>
 <style>
   :root {
     color-scheme: dark;
@@ -576,6 +592,15 @@
   @media (prefers-reduced-motion: reduce) {
     * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
   }
+
+  /* ---------- installed-app safe areas (notch / home indicator) ---------- */
+  .app {
+    padding-top: calc(20px + env(safe-area-inset-top, 0px));
+    padding-left: calc(16px + env(safe-area-inset-left, 0px));
+    padding-right: calc(16px + env(safe-area-inset-right, 0px));
+    padding-bottom: calc(108px + env(safe-area-inset-bottom, 0px));
+  }
+  .nav { bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
 </style>
 
 <div class="stage">
@@ -640,10 +665,10 @@
 
     <div class="sec-head"><h2>Why it rotates</h2></div>
     <div class="principle">
-      Each weekday keeps a fixed <b>job</b> &mdash; Tuesday is always knee-safe legs,
-      Thursday is always upper-body muscle. What changes is the <b>selection</b>:
-      exercises are drawn from a pool using the ISO week number, so the stimulus
-      moves every Monday without you replanning anything.
+      Each weekday keeps a fixed <b>job</b> &mdash; Monday is always back, Wednesday
+      is always chest, Thursday is always shoulders and arms. What changes is the
+      <b>selection</b>: exercises are drawn from a pool using the ISO week number,
+      so the stimulus moves every Monday without you replanning anything.
     </div>
     <div class="principle">
       Because the draw is seeded by the week, it&rsquo;s <b>stable within the week</b>
@@ -698,10 +723,31 @@
       proprioception as much as strength.
     </div>
     <div class="principle">
-      <b>Endurance with muscle</b> &mdash; resistance work sits in the 8&ndash;15 rep
-      hypertrophy range rather than 1&ndash;5 rep max work, paired with steady-state
-      and interval cardio. You build visible muscle without the joint cost of a
-      max-strength block.
+      <b>Muscle without bulk</b> &mdash; four lifting days a week (back, chest,
+      shoulders and arms, plus posterior chain) in the 8&ndash;15 rep hypertrophy
+      range rather than 1&ndash;5 rep max work. Enough volume to visibly add muscle,
+      not enough to carry you toward a heavyweight build.
+    </div>
+    <div class="principle">
+      <b>Endurance</b> &mdash; steady-state and intervals stay in every week, both
+      because you asked for the engine and because the conditioning is what keeps
+      body fat low enough for the muscle to actually show.
+    </div>
+
+    <div class="sec-head"><h2>The honest part</h2></div>
+    <div class="principle">
+      The lean, defined look you&rsquo;re after is roughly <b>30% training and 70%
+      body fat</b>. The muscle this program builds only becomes visible under a
+      low enough body-fat percentage, and that&rsquo;s decided in the kitchen &mdash;
+      a modest calorie deficit with high protein, held for months. No training
+      split substitutes for it.
+    </div>
+    <div class="principle">
+      The training side that matters most for that silhouette is
+      <b>shoulders and back width</b> against a tight waist. That&rsquo;s why lateral
+      raises and pull-ups get the highest rep volume in the whole program, and why
+      core work leans anti-rotation rather than heavy weighted side bends that
+      thicken the waist.
     </div>
   </section>
 
@@ -727,16 +773,17 @@
 (function () {
   "use strict";
 
-  /* ============ pools ============ */
+  /* ============ pools ============
+     Pools are split by movement ROLE, not by muscle. Each day draws one
+     exercise per role, so a session can never come back as four bench
+     variations in a row. */
 
   var POSTURE = [
     { n: "Band Pull-Aparts", d: "3 \u00d7 15" },
-    { n: "Face Pulls", d: "3 \u00d7 15", c: "Elbows high, pull to the forehead, not the chin." },
+    { n: "Face Pull", d: "3 \u00d7 15", c: "Elbows high, pull to the forehead, not the chin." },
     { n: "Prone Y-Raise", d: "3 \u00d7 12" },
     { n: "Prone T-Raise", d: "3 \u00d7 12" },
     { n: "Wall Slides", d: "3 \u00d7 12", c: "Ribs down, keep both wrists in contact." },
-    { n: "Wide-Grip Seated Row", d: "3 \u00d7 12", c: "Pause and squeeze the shoulder blades." },
-    { n: "Dumbbell Reverse Fly", d: "3 \u00d7 15" },
     { n: "Chin Tucks", d: "3 \u00d7 15", c: "Lengthen the back of the neck, no nodding." },
     { n: "Thoracic Extension over Roller", d: "2 \u00d7 10" },
     { n: "Scapular Push-Up", d: "3 \u00d7 12" }
@@ -749,23 +796,115 @@
     { n: "Bird Dog", d: "3 \u00d7 12 / side" },
     { n: "Pallof Press", d: "3 \u00d7 12 / side", c: "Resist the rotation \u2014 that's the whole exercise." },
     { n: "Hollow Body Hold", d: "3 \u00d7 25s" },
-    { n: "Slow Bicycle Crunch", d: "3 \u00d7 20", c: "Controlled tempo, hands off the neck." },
+    { n: "Hanging Knee Raise", d: "3 \u00d7 12", c: "Curl the pelvis up rather than just swinging the legs." },
+    { n: "Cable Crunch", d: "3 \u00d7 15" },
     { n: "Band Woodchop", d: "3 \u00d7 12 / side" },
     { n: "Stir-the-Pot", d: "3 \u00d7 10 / direction" },
-    { n: "Weighted Sit-Up", d: "3 \u00d7 15", c: "No momentum \u2014 lower slower than you lift." }
+    { n: "Slow Bicycle Crunch", d: "3 \u00d7 20", c: "Controlled tempo, hands off the neck." },
+    { n: "Ab Wheel Rollout", d: "3 \u00d7 10", c: "Only as far as you can go without the back arching." }
   ];
 
-  var KNEE_STR = [
-    { n: "Glute Bridge", d: "3 \u00d7 15" },
-    { n: "Single-Leg Glute Bridge", d: "3 \u00d7 12 / leg" },
-    { n: "Terminal Knee Extension", d: "3 \u00d7 15 / leg", c: "Band behind the knee, finish by locking out gently." },
-    { n: "Wall Sit", d: "3 \u00d7 35s", c: "Only to a depth that stays pain-free." },
-    { n: "Leg Press", d: "3 \u00d7 12", c: "Moderate depth, slow eccentric, never bounce." },
+  /* ---- chest ---- */
+  var CHEST_PRESS = [
+    { n: "Barbell Bench Press", d: "4 \u00d7 8", c: "Heaviest press of the week. Leave 2 reps in reserve." },
+    { n: "Dumbbell Bench Press", d: "4 \u00d7 10" },
+    { n: "Machine Chest Press", d: "4 \u00d7 10" },
+    { n: "Dumbbell Floor Press", d: "4 \u00d7 10" },
+    { n: "Cable Chest Press", d: "4 \u00d7 12" }
+  ];
+  var CHEST_INCLINE = [
+    { n: "Incline Dumbbell Press", d: "4 \u00d7 10", c: "Upper chest \u2014 the shelf that makes the torso read wide." },
+    { n: "Incline Barbell Press", d: "4 \u00d7 8" },
+    { n: "Weighted Dip", d: "3 \u00d7 8\u201310", c: "Slight forward lean for chest. Stop if the shoulder pinches." },
+    { n: "Feet-Elevated Push-Ups", d: "3 \u00d7 15" }
+  ];
+  var CHEST_FLY = [
+    { n: "Cable Fly", d: "3 \u00d7 15", c: "The stretch at the bottom is where the growth is." },
+    { n: "Low-to-High Cable Fly", d: "3 \u00d7 15" },
+    { n: "Pec Deck", d: "3 \u00d7 15" },
+    { n: "Dumbbell Fly", d: "3 \u00d7 12" }
+  ];
+  var TRICEPS = [
+    { n: "Overhead Cable Triceps Extension", d: "3 \u00d7 12", c: "Long head \u2014 two-thirds of the arm's mass." },
+    { n: "Skull Crushers", d: "3 \u00d7 10" },
+    { n: "Rope Pushdown", d: "3 \u00d7 15" },
+    { n: "Dumbbell Kickback", d: "3 \u00d7 15 / side" },
+    { n: "Bench Dip", d: "3 \u00d7 15" },
+    { n: "Close-Grip Bench Press", d: "3 \u00d7 10" }
+  ];
+
+  /* ---- back ---- */
+  var BACK_VERT = [
+    { n: "Weighted Pull-Up", d: "4 \u00d7 6\u20138", c: "The single best lat-width builder." },
+    { n: "Assisted Pull-Up", d: "3 \u00d7 8\u201310" },
+    { n: "Wide-Grip Lat Pulldown", d: "4 \u00d7 10", c: "Drive the elbows down, not the hands back." },
+    { n: "Neutral-Grip Pulldown", d: "4 \u00d7 12" }
+  ];
+  var BACK_HORIZ = [
+    { n: "Barbell Row", d: "4 \u00d7 8", c: "Flat back, hinged around 45 degrees." },
+    { n: "Chest-Supported Row", d: "4 \u00d7 10", c: "All the back work, none of the lower-back cost." },
+    { n: "Seated Cable Row", d: "4 \u00d7 12" },
+    { n: "Single-Arm Dumbbell Row", d: "3 \u00d7 10 / side" },
+    { n: "T-Bar Row", d: "4 \u00d7 10" },
+    { n: "Landmine Row", d: "3 \u00d7 10 / side" },
+    { n: "Inverted Row", d: "3 \u00d7 12" }
+  ];
+  var BACK_ISO = [
+    { n: "Straight-Arm Pulldown", d: "3 \u00d7 15" },
+    { n: "Dumbbell Pullover", d: "3 \u00d7 12" },
+    { n: "Rear Delt Fly", d: "3 \u00d7 15" },
+    { n: "Face Pull", d: "3 \u00d7 15" }
+  ];
+  var BICEPS = [
+    { n: "Barbell Curl", d: "4 \u00d7 10" },
+    { n: "Incline Dumbbell Curl", d: "3 \u00d7 12", c: "Biggest stretch on the biceps of any curl." },
+    { n: "Hammer Curl", d: "3 \u00d7 12", c: "Builds the brachialis \u2014 what thickens the arm from the side." },
+    { n: "Cable Curl", d: "3 \u00d7 15" },
+    { n: "Preacher Curl", d: "3 \u00d7 12" },
+    { n: "Concentration Curl", d: "3 \u00d7 12 / side" }
+  ];
+
+  /* ---- shoulders ---- */
+  var SH_PRESS = [
+    { n: "Seated Dumbbell Shoulder Press", d: "4 \u00d7 10" },
+    { n: "Standing Overhead Press", d: "4 \u00d7 8", c: "Ribs down \u2014 don't arch to find the range." },
+    { n: "Arnold Press", d: "3 \u00d7 10" },
+    { n: "Landmine Shoulder Press", d: "3 \u00d7 10 / side" }
+  ];
+  var SH_LATERAL = [
+    { n: "Dumbbell Lateral Raise", d: "4 \u00d7 15", c: "Side delts build the V. Go light, go strict." },
+    { n: "Cable Lateral Raise", d: "4 \u00d7 15 / side", c: "Constant tension beats heavy swinging here." },
+    { n: "Leaning Lateral Raise", d: "3 \u00d7 12 / side" },
+    { n: "Machine Lateral Raise", d: "4 \u00d7 15" }
+  ];
+  var SH_REAR = [
+    { n: "Reverse Pec Deck", d: "3 \u00d7 15" },
+    { n: "Cable Rear Delt Fly", d: "3 \u00d7 15 / side" },
+    { n: "Face Pull", d: "3 \u00d7 15", c: "Rear delts and posture in one movement." },
+    { n: "Prone Rear Delt Raise", d: "3 \u00d7 15" }
+  ];
+
+  /* ---- legs: every entry is knee-safe by construction ---- */
+  var KNEE_PRESS = [
+    { n: "Leg Press", d: "4 \u00d7 12", c: "Moderate depth, slow eccentric, never bounce." },
+    { n: "Goblet Squat", d: "3 \u00d7 12", c: "Only to a depth that stays pain-free." },
+    { n: "Hack Squat Machine", d: "3 \u00d7 12", c: "Back supported, controlled range." },
+    { n: "Wall Sit", d: "3 \u00d7 35s" }
+  ];
+  var KNEE_UNI = [
     { n: "Low Box Step-Up", d: "3 \u00d7 10 / leg", c: "Knee tracks over the toes \u2014 no inward collapse." },
-    { n: "Seated Leg Extension, light", d: "3 \u00d7 15", c: "Full range only if it stays pain-free." },
-    { n: "Calf Raise", d: "3 \u00d7 15" }
+    { n: "Slow Step-Down", d: "3 \u00d7 8 / leg", c: "5-second lower. Knee stays stacked over the foot." },
+    { n: "Supported Split Squat", d: "3 \u00d7 10 / leg", c: "Hold a rack for balance, short range to start." },
+    { n: "Single-Leg Press", d: "3 \u00d7 12 / leg", c: "Lets you load the left side without the right compensating." }
   ];
-
+  var KNEE_ISO = [
+    { n: "Lying Leg Curl", d: "3 \u00d7 12", c: "Hamstring strength is what protects a repaired ACL." },
+    { n: "Seated Leg Curl", d: "3 \u00d7 12" },
+    { n: "Terminal Knee Extension", d: "3 \u00d7 15 / leg", c: "Band behind the knee, gentle lockout." },
+    { n: "Seated Leg Extension, light", d: "3 \u00d7 15", c: "Full range only if it stays pain-free." },
+    { n: "Calf Raise", d: "3 \u00d7 15" },
+    { n: "Nordic Curl, assisted", d: "3 \u00d7 6", c: "Brutal but the best hamstring insurance there is." }
+  ];
   var KNEE_BAL = [
     { n: "Single-Leg Balance Reach", d: "3 \u00d7 8 / leg" },
     { n: "Banded Clamshell", d: "3 \u00d7 15 / side" },
@@ -774,41 +913,31 @@
     { n: "Mini-Band Lateral Step-Out", d: "3 \u00d7 12 / side" },
     { n: "Single-Leg Stance on Cushion", d: "3 \u00d7 30s / leg", c: "Eyes closed only once it feels solid." },
     { n: "Standing Hip Abduction", d: "3 \u00d7 15 / side" },
-    { n: "Slow Step-Down", d: "3 \u00d7 8 / leg", c: "5-second lower. Knee stays stacked over the foot." }
+    { n: "Copenhagen Plank, short lever", d: "3 \u00d7 20s / side", c: "Adductors \u2014 the most neglected knee stabiliser." }
   ];
 
-  var PUSH = [
-    { n: "Dumbbell Bench Press", d: "4 \u00d7 10" },
-    { n: "Push-Ups", d: "3 \u00d7 12\u201315" },
-    { n: "Overhead Dumbbell Press", d: "3 \u00d7 10", c: "Ribs down \u2014 don't arch to find the range." },
-    { n: "Incline Dumbbell Press", d: "3 \u00d7 10" },
-    { n: "Cable Chest Press", d: "3 \u00d7 12" },
-    { n: "Triceps Pushdown", d: "3 \u00d7 12" },
-    { n: "Dumbbell Floor Press", d: "3 \u00d7 10" },
-    { n: "Landmine Press", d: "3 \u00d7 10 / side" }
-  ];
-
-  var PULL = [
-    { n: "Lat Pulldown", d: "3 \u00d7 12" },
-    { n: "Seated Cable Row", d: "3 \u00d7 12" },
-    { n: "Single-Arm Dumbbell Row", d: "3 \u00d7 10 / side" },
-    { n: "Assisted Pull-Up", d: "3 \u00d7 8\u201310" },
-    { n: "Straight-Arm Pulldown", d: "3 \u00d7 12" },
-    { n: "Dumbbell Curl", d: "3 \u00d7 12" },
-    { n: "Chest-Supported Row", d: "3 \u00d7 12", c: "Best posture-builder in the pull pool." },
-    { n: "Inverted Row", d: "3 \u00d7 10" }
+  /* Hip-dominant loading: heavy posterior chain with almost no knee shear. */
+  var HINGE = [
+    { n: "Romanian Deadlift", d: "4 \u00d7 10", c: "Hips back, soft knees \u2014 the knee barely moves." },
+    { n: "Barbell Hip Thrust", d: "4 \u00d7 10", c: "Heaviest glute builder that leaves the knee alone." },
+    { n: "Dumbbell RDL", d: "3 \u00d7 12" },
+    { n: "Cable Pull-Through", d: "3 \u00d7 15" },
+    { n: "Trap Bar Deadlift", d: "3 \u00d7 8", c: "Moderate load, tall chest. Skip it if the knee objects." },
+    { n: "Kettlebell Swing", d: "3 \u00d7 15", c: "A hinge, not a squat. Power comes from the hips." },
+    { n: "Back Extension", d: "3 \u00d7 15" },
+    { n: "Farmer's Carry", d: "3 \u00d7 40 m", c: "Grip, traps and posture in one. Walk tall." }
   ];
 
   var STEADY = [
     { n: "Stationary Bike \u2014 steady", d: "25 min", c: "Conversational pace. Nasal breathing if you can hold it." },
-    { n: "Rowing Machine \u2014 steady", d: "20 min", c: "Legs\u2013hips\u2013arms sequence, tall spine." },
+    { n: "Rowing Machine \u2014 steady", d: "20 min", c: "Legs-hips-arms sequence, tall spine." },
     { n: "Incline Treadmill Walk", d: "30 min", c: "Knee-friendliest way to build the aerobic base." }
   ];
 
   var INTERVAL = [
     { n: "Bike Intervals", d: "20 min", c: "1 min hard / 2 min easy. Zero impact on the knee." },
     { n: "Elliptical Intervals", d: "20 min", c: "1 min hard / 2 min easy." },
-    { n: "Swim Intervals, easy pace", d: "20 min" }
+    { n: "Rower Intervals", d: "20 min", c: "500 m hard / 90s easy." }
   ];
 
   var MOBILITY = [
@@ -822,36 +951,53 @@
     { n: "Child's Pose to Cobra", d: "2 \u00d7 8" }
   ];
 
-  /* ============ week templates ============ */
+  /* ============ week templates ============
+     Blocks sharing a label render under one heading, so a day reads as
+     "BACK: vertical pull, horizontal pull, isolation" rather than a list. */
 
   var TPL = [
-    { t: "Posture & Pull", f: "Posture", sub: "Upper back, rear delts, deep core",
-      b: [ { l: "Posture", p: POSTURE, k: 3, s: 1 },
-           { l: "Core", p: CORE, k: 3, s: 2 } ] },
+    { t: "Back & Biceps", f: "Pull strength", sub: "Lat width, thickness, posture",
+      b: [ { l: "Back", p: BACK_VERT, k: 1, s: 1 },
+           { l: "Back", p: BACK_HORIZ, k: 1, s: 2 },
+           { l: "Back", p: BACK_ISO, k: 1, s: 3 },
+           { l: "Biceps", p: BICEPS, k: 2, s: 4 },
+           { l: "Posture", p: POSTURE, k: 1, s: 5 },
+           { l: "Core", p: CORE, k: 2, s: 6 } ] },
 
-    { t: "Knee-Safe Legs", f: "ACL knee", sub: "Controlled loading + zero-impact intervals", knee: true,
-      b: [ { l: "Lower body \u2014 strength", p: KNEE_STR, k: 4, s: 3 },
-           { l: "Endurance", p: INTERVAL, k: 1, s: 4 } ] },
+    { t: "Legs & Posterior Chain", f: "ACL knee", sub: "Knee-safe loading, hamstrings, glutes", knee: true,
+      b: [ { l: "Lower body", p: KNEE_PRESS, k: 1, s: 7 },
+           { l: "Lower body", p: KNEE_UNI, k: 1, s: 8 },
+           { l: "Lower body", p: KNEE_ISO, k: 2, s: 9 },
+           { l: "Hip hinge", p: HINGE, k: 1, s: 10 },
+           { l: "Endurance", p: INTERVAL, k: 1, s: 11 } ] },
 
-    { t: "Core & Steady State", f: "Core", sub: "Anti-rotation work, aerobic base",
-      b: [ { l: "Core", p: CORE, k: 3, s: 5, o: 3 },
-           { l: "Endurance", p: STEADY, k: 1, s: 6 } ] },
+    { t: "Chest & Triceps", f: "Push strength", sub: "Flat, incline, stretch, arms",
+      b: [ { l: "Chest", p: CHEST_PRESS, k: 1, s: 12 },
+           { l: "Chest", p: CHEST_INCLINE, k: 1, s: 13 },
+           { l: "Chest", p: CHEST_FLY, k: 1, s: 14 },
+           { l: "Triceps", p: TRICEPS, k: 2, s: 15 },
+           { l: "Core", p: CORE, k: 2, s: 16, o: 3 } ] },
 
-    { t: "Upper Body Muscle", f: "Hypertrophy", sub: "8\u201315 reps \u2014 size without max load",
-      b: [ { l: "Push", p: PUSH, k: 2, s: 7 },
-           { l: "Pull", p: PULL, k: 2, s: 8 },
-           { l: "Posture accessory", p: POSTURE, k: 1, s: 9 } ] },
+    { t: "Shoulders & Arms", f: "Hypertrophy", sub: "Side delts and arms - the V taper",
+      b: [ { l: "Shoulders", p: SH_PRESS, k: 1, s: 17 },
+           { l: "Shoulders", p: SH_LATERAL, k: 1, s: 18 },
+           { l: "Shoulders", p: SH_REAR, k: 1, s: 19 },
+           { l: "Arms", p: BICEPS, k: 2, s: 20, o: 2 },
+           { l: "Arms", p: TRICEPS, k: 2, s: 21, o: 3 },
+           { l: "Posture", p: POSTURE, k: 1, s: 22, o: 4 } ] },
 
-    { t: "Knee Stability & Core", f: "ACL knee", sub: "Balance, proprioception, hip control", knee: true,
-      b: [ { l: "Lower body \u2014 balance", p: KNEE_BAL, k: 4, s: 10 },
-           { l: "Core", p: CORE, k: 2, s: 11, o: 6 } ] },
+    { t: "Knee Stability & Glutes", f: "ACL knee", sub: "Balance, proprioception, hip control", knee: true,
+      b: [ { l: "Lower body - balance", p: KNEE_BAL, k: 3, s: 23 },
+           { l: "Hip hinge", p: HINGE, k: 2, s: 24, o: 4 },
+           { l: "Core", p: CORE, k: 2, s: 25, o: 6 } ] },
 
-    { t: "Endurance & Mobility", f: "Endurance", sub: "Longer aerobic piece, full mobility flow",
-      b: [ { l: "Endurance", p: STEADY, k: 1, s: 12, o: 1 },
-           { l: "Mobility", p: MOBILITY, k: 4, s: 13 } ] },
+    { t: "Endurance & Carries", f: "Endurance", sub: "Aerobic piece, loaded carry, mobility",
+      b: [ { l: "Endurance", p: STEADY, k: 1, s: 26, o: 1 },
+           { l: "Full body", p: HINGE, k: 1, s: 27, o: 2 },
+           { l: "Mobility", p: MOBILITY, k: 3, s: 28 } ] },
 
     { t: "Active Recovery", f: "Recovery", sub: "Light movement only", rest: true,
-      b: [ { l: "Mobility flow", p: MOBILITY, k: 6, s: 14, o: 4 } ] }
+      b: [ { l: "Mobility flow", p: MOBILITY, k: 6, s: 29, o: 4 } ] }
   ];
 
   var DW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -877,12 +1023,8 @@
 
   /* ============ deterministic draw ============ */
 
-  function draw(pool, week, salt, count, shift) {
-    var n = pool.length;
-    var off = (((week * 5 + salt * 3 + (shift || 0) * 11) % n) + n) % n;
-    var out = [];
-    for (var i = 0; i < count; i++) out.push(pool[(off + i) % n]);
-    return out;
+  function offsetFor(week, salt, shift, n) {
+    return (((week * 5 + salt * 3 + (shift || 0) * 11) % n) + n) % n;
   }
 
   /* ============ storage ============ */
@@ -908,11 +1050,26 @@
     var t = TPL[day];
     var bump = shuffles[wkk + "|" + day] || 0;
     var list = [];
+    var seen = {};
+
     t.b.forEach(function (blk) {
-      draw(blk.p, week + bump, blk.s, blk.k, blk.o).forEach(function (e) {
+      var pool = blk.p;
+      var n = pool.length;
+      var off = offsetFor(week + bump, blk.s, blk.o, n);
+      var added = 0;
+      // Walk the pool from the seeded offset, skipping anything already
+      // drawn today - several pools share movements (face pulls sit in both
+      // the back and posture pools), and one session should never list the
+      // same exercise twice.
+      for (var step = 0; step < n && added < blk.k; step++) {
+        var e = pool[(off + step) % n];
+        if (seen[e.n]) continue;
+        seen[e.n] = 1;
         list.push({ n: e.n, d: e.d, c: e.c, l: blk.l });
-      });
+        added++;
+      }
     });
+
     return { t: t, list: list };
   }
 
@@ -1205,3 +1362,15 @@
   renderAll();
 })();
 </script>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {
+        /* offline install is best-effort; the app still runs online */
+      });
+    });
+  }
+</script>
+</body>
+</html>
