@@ -1,0 +1,66 @@
+name: Daily Asia Commodities Brief
+
+on:
+  schedule:
+    # Brief must be live by 07:30 Europe/Amsterdam, year-round.
+    # GitHub Actions cron is UTC-only and does not follow DST, so we use
+    # two month-gated entries with ~30 min buffer for cron jitter + build.
+    # CET months (Nov-Mar): 06:00 UTC = 07:00 CET, ready well before 07:30.
+    - cron: "0 6 * 1-3,11,12 1-5"
+    # CEST months (Apr-Oct): 05:00 UTC = 07:00 CEST, ready well before 07:30.
+    - cron: "0 5 * 4-10 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: daily-brief
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate brief
+        working-directory: scripts
+        run: python generate_brief.py
+
+      - name: Commit brief to repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Daily brief $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy-pages:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
